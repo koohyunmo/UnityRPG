@@ -72,7 +72,11 @@ class PacketManager
 		_onRecv.Add((ushort)MsgId.SChat, MakePacket<S_Chat>);
 		_handler.Add((ushort)MsgId.SChat, PacketHandler.S_ChatHandler);		
 		_onRecv.Add((ushort)MsgId.SChatSpawn, MakePacket<S_ChatSpawn>);
-		_handler.Add((ushort)MsgId.SChatSpawn, PacketHandler.S_ChatSpawnHandler);
+		_handler.Add((ushort)MsgId.SChatSpawn, PacketHandler.S_ChatSpawnHandler);		
+		_onRecv.Add((ushort)MsgId.SChatDespawn, MakePacket<S_ChatDespawn>);
+		_handler.Add((ushort)MsgId.SChatDespawn, PacketHandler.S_ChatDespawnHandler);		
+		_onRecv.Add((ushort)MsgId.SSpawnDamage, MakePacket<S_SpawnDamage>);
+		_handler.Add((ushort)MsgId.SSpawnDamage, PacketHandler.S_SpawnDamageHandler);
 	}
 
 	public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)

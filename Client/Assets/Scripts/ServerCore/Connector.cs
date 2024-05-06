@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ServerCore
 {
@@ -49,6 +50,7 @@ namespace ServerCore
 			}
 			else
 			{
+				//TODO 로비로
 				Debug.LogError($"OnConnectCompleted Fail: {args.SocketError}");
 			}
 		}

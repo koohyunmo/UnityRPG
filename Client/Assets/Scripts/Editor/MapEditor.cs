@@ -51,25 +51,67 @@ public class MapEditor
                 Tilemap tmEnv = Util.FindChild<Tilemap>(map, "Tilemap _Env", true);
                 Tilemap tm = Util.FindChild<Tilemap>(map, "Tilemap _Collision", true);
 
+                int x1 = 0;
+                int y1 = 0;
+                int x2 = 0;
+                int y2 = 0;
+
                 if (tm == null)
                 {
                     Debug.LogError("Tile Map IS null");
                     continue;
                 }
+
+
+                for (int y = tm.cellBounds.yMax; y >= tm.cellBounds.yMin; y--)
+                {
+                    for (int x = tm.cellBounds.xMin; x <= tm.cellBounds.xMax; x++)
+                    {
+                        var tile = tm.GetTile(new Vector3Int(x, y, 0));
+                        var envTile = tmEnv.GetTile(new Vector3Int(x, y, 0));
+
+                        if(tile == null) continue;
+
+                        if(tile.name.Equals("Start"))
+                        {
+                            x1 = x;
+                            y1 = y;
+                        }
+                        else if(tile.name.Equals("End"))
+                        {
+                            x2 = x;
+                            y2 = y;
+                        }
+                    }
+                }
+
+
                 using (var writer = File.CreateText($"{pathPrefix}/{map.name}.txt"))
                 {
-                    writer.WriteLine(tm.cellBounds.xMin);
-                    writer.WriteLine(tm.cellBounds.xMax);
-                    writer.WriteLine(tm.cellBounds.yMin);
-                    writer.WriteLine(tm.cellBounds.yMax);
+                    //writer.WriteLine(tm.cellBounds.xMin);
+                    writer.WriteLine(x1);
+                    //writer.WriteLine(tm.cellBounds.xMax);
+                    writer.WriteLine(x2);
+                    //writer.WriteLine(tm.cellBounds.yMin);
+                    writer.WriteLine(y2);
+                    //writer.WriteLine(tm.cellBounds.yMax);
+                    writer.WriteLine(y1);
+
 
                     for (int y = tm.cellBounds.yMax; y >= tm.cellBounds.yMin; y--)
                     {
+                        if (y < y2 || y > y1)
+                            continue;;
                         for (int x = tm.cellBounds.xMin; x <= tm.cellBounds.xMax; x++)
                         {
+
+                            // x1, y1, x2, y2 범위 밖에 있는 경우 건너뛰기
+                            if (x < x1 || x > x2)
+                                continue;
+
                             var tile = tm.GetTile(new Vector3Int(x, y, 0));
                             var envTile = tmEnv.GetTile(new Vector3Int(x,y,0));
-                  
+
                             if (tile != null)
                             {
                                 if(tile.name.Equals("portal") || tile.name.Equals("sign"))

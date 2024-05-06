@@ -42,7 +42,7 @@ public class UI_MarketItem : UI_Base
 
         packet.ItemDbId = _marketItem.ItemDbId;
         packet.SellerId = _marketItem.SellerId;
-        packet.BuyerId = Managers.Network.PlayerUniqueId;
+        packet.BuyerId = Managers.Network.PlayerDbId;
         packet.Price = _marketItem.Price;
 
         Managers.Network.Send(packet);

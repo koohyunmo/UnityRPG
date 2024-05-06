@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Server.Game
@@ -123,6 +124,20 @@ namespace Server.Game
 
             // 확인: _collision 배열의 범위를 벗어나는 인덱스 접근이 없는지 체크
             return _collision[y, x] == 2;
+        }
+
+        public Int16 GetTileInfo(Vector2Int cellPos)
+        {
+            if (cellPos.x < MinX || cellPos.x > MaxX)
+                return 1;
+            if (cellPos.y < MinY || cellPos.y > MaxY)
+                return 1;
+
+            int x = cellPos.x - MinX;
+            int y = MaxY - cellPos.y;
+
+            // 확인: _collision 배열의 범위를 벗어나는 인덱스 접근이 없는지 체크
+            return _collision[y, x];
         }
 
 
@@ -257,25 +272,27 @@ namespace Server.Game
             MinY = int.Parse(reader.ReadLine());
             MaxY = int.Parse(reader.ReadLine());
 
-            int xCount = MaxX - MinX + 1;
-            int yCount = MaxY - MinY + 1;
+            int xCount = MaxX - MinX+1;
+            int yCount = MaxY - MinY+1;
             _collision = new Int16[yCount, xCount];
             _objects = new GameObject[yCount, xCount];
 
             StreamWriter sw = new StreamWriter($"F:\\{mapName}_Loaded.txt");
 
-            reader.ReadLine();
-
-            for (int y = 0; y < yCount - 1; y++)
+            for (int y = 0; y < yCount; y++)
             {
                 string line = reader.ReadLine();
-                for (int x = 0; x < xCount-1; x++)
+                if (line == null) continue;
+
+                for (int x = 0; x < xCount; x++)
                 {
                     switch(line[x])
                     {
                         case '0': _collision[y, x] = 0; break;
                         case '1': _collision[y, x] = 1; break;
                         case '2': _collision[y, x] = 2;  break;
+                        default:
+                            _collision[y, x] = 1; break;
                     }
                     sw.Write(line[x]); // 저장할 문자열 누적
                 }

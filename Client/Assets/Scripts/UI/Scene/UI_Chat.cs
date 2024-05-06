@@ -35,6 +35,7 @@ public class UI_Chat : UI_Scene
         Get<Button>((int)Buttons.SendButton).gameObject.BindEvent(OnClickSendButton);
         inputField = Get<InputField>((int)Inputs.InputField);
         inputField.text = "";
+        inputField.characterLimit = 50;  // 입력 필드의 최대 글자 수를 50으로 설정
 
         Managers.Chat.SetChatRoomGrid(Get<GameObject>((int)GameObjects.ChatRoom).transform);
     }
@@ -43,7 +44,6 @@ public class UI_Chat : UI_Scene
     {
         if(inputField == null )return;
         if(inputField.text.Equals("")) return;
-        if(inputField.text.Count() > 100) return;
         C_Chat c_Chat= new C_Chat();
         c_Chat.Message = inputField.text;
         Managers.Network.Send(c_Chat);

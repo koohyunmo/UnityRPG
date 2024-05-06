@@ -78,6 +78,7 @@ namespace Server
 		}
 
 		// 실제 Network IO 보내는 부분
+		// 패킷 모아 보내기
 		public void FlushSend()
 		{
 			List<ArraySegment<byte>> sendList = null;
@@ -85,8 +86,8 @@ namespace Server
 			{
 				// 0.1초가 지났거나, 1만바이트 패킷이 쌓였을때
 				long delta = (System.Environment.TickCount64 - _lastSendTick);
-				if (delta < 100 && _reservedSendBytes < 10000)
-					return;
+				if (delta < 100 && _reservedSendBytes < 1024)
+				//	return;
 				if (_reserveQueue.Count == 0)
 					return;
 

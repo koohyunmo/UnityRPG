@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using TMPro;
 using UnityEngine;
 using static Define;
 
@@ -50,6 +51,7 @@ public class CreatureController : BaseController
         }
         _hpBar.SetHpBar(ratio);
     }
+
 
 
     

@@ -40,6 +40,7 @@ public class ObjectManager
                 //MyPlayer.Stat = info.StatInfo;
                 MyPlayer.Stat.MergeFrom(info.StatInfo);
                 MyPlayer.SyncPos();
+                MyPlayer.SetName(info.Name);
             }
             else
             {
@@ -52,6 +53,7 @@ public class ObjectManager
                 pc.PosInfo = info.PosInfo;
                 pc.Stat.MergeFrom(info.StatInfo);
                 pc.SyncPos();
+                pc.SetName(info.Name);
             }
         }
         else if(objectType == GameObjectType.Monster)

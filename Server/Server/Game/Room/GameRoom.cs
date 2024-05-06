@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Server.Game
 {
@@ -18,6 +19,7 @@ namespace Server.Game
         Dictionary<int, Player> _players = new Dictionary<int, Player>();
         Dictionary<int, Monster> _monsters = new Dictionary<int, Monster>();
         Dictionary<int, Projectile> _projectiles = new Dictionary<int, Projectile>();
+        Dictionary<int, Chat> _chat = new Dictionary<int, Chat>();
 
         public Zone[,] Zones { get; private set; }
         public int ZoneCells { get; private set; }
@@ -84,6 +86,7 @@ namespace Server.Game
         }
 
         Random _rand = new Random();
+
         public void EnterGame(GameObject gameObject, bool randomPos)
         {
             if (gameObject == null)
@@ -98,8 +101,12 @@ namespace Server.Game
                     respawnPos.y = _rand.Next(Map.MinY, Map.MaxY + 1);
                     if (Map.Find(respawnPos) == null)
                     {
-                        gameObject.CellPos = respawnPos;
-                        break;
+                        if(Map.IsEmptyCell(respawnPos))
+                        {
+                            gameObject.CellPos = respawnPos;
+                            break;
+                        }
+
                     }
                 }
             }
@@ -121,6 +128,10 @@ namespace Server.Game
                 {
                     S_EnterGame enterPacket = new S_EnterGame();
                     enterPacket.Player = player.Info;
+                    if(player.Info.StatInfo.Hp <= 0) // 체력이 0이면 리셋
+                    {
+                        enterPacket.Player.StatInfo.Hp = enterPacket.Player.StatInfo.MaxHp;
+                    }
                     player.Session.Send(enterPacket);
 
                     player.Vision.Update();
@@ -267,8 +278,34 @@ namespace Server.Game
                 p.Session.Send(packet);
             }
         }
+        public void BroadcastVisionCube(GameRoom Room,Vector2Int pos, IMessage packet)
+        {
+            if (Room == null)
+                return;
 
-        public void Broadcast(Player player,IMessage packet)
+            List<Zone> zones = GetAdjacentZones(pos);
+
+
+            foreach (Player p in zones.SelectMany(z => z.Players))
+            {
+                if (Room == null)
+                {
+                    return;
+                }
+ 
+
+                int dx = p.CellPos.x - pos.x;
+                int dy = p.CellPos.y - pos.y;
+                if (Math.Abs(dx) > GameRoom.VisionCells)
+                    continue;
+                if (Math.Abs(dy) > GameRoom.VisionCells)
+                    continue;
+
+                p.Session.Send(packet);
+            }
+        }
+
+        public void Broadcast(IMessage packet)
         {
             foreach (Player p in _players.Values)
             {

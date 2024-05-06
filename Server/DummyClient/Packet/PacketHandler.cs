@@ -154,26 +154,37 @@ public class PacketHandler
 
     public static void S_MailItemListHandler(PacketSession session, IMessage message)
     {
-        throw new NotImplementedException();
+       S_ResMarketList s_ResMarketList = new S_ResMarketList();
     }
 
     public static void S_MailItemReceiveHandler(PacketSession session, IMessage message)
     {
-        throw new NotImplementedException();
+        S_MailItemReceive s_MailItemReceive = new S_MailItemReceive();
     }
 
     internal static void S_MarketItemSearchHandler(PacketSession session, IMessage message)
     {
-        throw new NotImplementedException();
+
     }
 
     internal static void S_ChatHandler(PacketSession session, IMessage message)
     {
-        throw new NotImplementedException();
+
     }
 
     public static void S_ChatSpawnHandler(PacketSession session, IMessage message)
     {
-        throw new NotImplementedException();
+
+    }
+
+    internal static void S_ChatDespawnHandler(PacketSession session, IMessage message)
+    {
+
+
+    }
+
+    internal static void S_SpawnDamageHandler(PacketSession session, IMessage message)
+    {
+
     }
 }

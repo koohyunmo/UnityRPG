@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using Google.Protobuf.Protocol;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Windows.WebCam;
 
 public class ChatManager
 {
 
     Transform chatRoomGrid;
     Queue<GameObject> chatQueue = new Queue<GameObject>();
-    Dictionary<int,GameObject> localChat = new Dictionary<int,GameObject>();
+    Dictionary<int, BallonChat> ballonChat = new Dictionary<int, BallonChat>();
     public void SetChatRoomGrid(Transform grid)
     {
         chatRoomGrid = grid;
@@ -35,23 +36,45 @@ public class ChatManager
         }
     }
 
-    public void AddLocalChat(int senderId, ChatInfo chatinfo)
+    public void AddBallonChat(int senderId,int chatId, ChatInfo chatinfo)
     {
-        GameObject player = Managers.Object.FindById(senderId);
-        if(player == null) return;
+        GameObject target = Managers.Object.FindById(senderId);
+        if(target == null) return;
+        GameObject go = Managers.Resource.Instantiate("Chat/BallonChat");
+        if(go == null) return;
+        CreatureController cc = target.GetComponent<CreatureController>();
+        if(cc == null) return;
 
-        GameObject chatObj = null;
+        ClearPrevBallonChat(senderId);
 
-        localChat.TryGetValue(senderId,out chatObj);
-        if(chatObj != null)
+        var bc = go.GetComponent<BallonChat>();
+        bc.OnDialog(chatinfo.Chat);
+        bc.SetChatId(chatId);
+
+        //go.transform.position = Managers.Map.CurrentGrid.CellToWorld(cc.CellPos) + Vector3.up + new Vector3(0.5f, 0.5f);
+        go.transform.position = target.transform.position + Vector3.up + new Vector3(0.5f, 0.5f);
+        go.transform.SetParent(target.transform);
+        ballonChat[senderId] = bc;
+    }
+
+    private void ClearPrevBallonChat(int senderId)
+    {
+        BallonChat bc = null;
+        ballonChat.TryGetValue(senderId, out bc);
+        if (bc != null)
         {
-            Managers.Resource.Destroy(chatObj);
-            localChat[senderId] = null;
+            Managers.Resource.Destroy(bc.gameObject);
+            ballonChat.Remove(senderId);
         }
-        
-        GameObject go = Managers.Resource.Instantiate("Creature/Chat");
-        go.transform.position = player.transform.position + Vector3.up;
-        go.transform.SetParent(player.transform);
-        localChat[senderId] = go;
+    }
+    public void ClearBallonChat(int senderId, int chatId)
+    {
+        BallonChat bc = null;
+        ballonChat.TryGetValue(senderId, out bc);
+        if (bc != null && bc.chatId == chatId)
+        {
+            Managers.Resource.Destroy(bc.gameObject);
+            ballonChat.Remove(senderId);
+        }
     }
 }

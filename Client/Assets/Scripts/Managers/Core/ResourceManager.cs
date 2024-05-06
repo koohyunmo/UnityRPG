@@ -38,6 +38,23 @@ public class ResourceManager
         return go;
     }
 
+    public GameObject Instantiate(GameObject prefab, Transform parent = null)
+    {
+        GameObject original = prefab;
+        if (original == null)
+        {
+            Debug.Log($"Failed to load prefab : {prefab.name}");
+            return null;
+        }
+
+        if (original.GetComponent<Poolable>() != null)
+            return Managers.Pool.Pop(original, parent).gameObject;
+
+        GameObject go = Object.Instantiate(original, parent);
+        go.name = original.name;
+        return go;
+    }
+
     public void Destroy(GameObject go)
     {
         if (go == null)

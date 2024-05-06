@@ -123,6 +123,8 @@ namespace Server.Object
         {
             if (Room == null)
                 return;
+            if (attacker == null)
+                return;
 
             damage = Math.Max((damage - TotalDefence),0);
             Stat.Hp = Math.Max(Stat.Hp - damage,0);
@@ -132,9 +134,13 @@ namespace Server.Object
             changePacket.Hp = Stat.Hp;
             Room.BroadcastVisionCube(CellPos,changePacket);
 
-            if(Stat.Hp <= 0)
-            {
+            S_SpawnDamage s_SpawnDamage = new S_SpawnDamage();
+            s_SpawnDamage.Damage = damage;
+            s_SpawnDamage.HitObjectId = Id;
+            Room.BroadcastVisionCube(CellPos, s_SpawnDamage);
 
+            if (Stat.Hp <= 0)
+            {
                 OnDead(attacker);
             }
 

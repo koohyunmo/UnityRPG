@@ -349,13 +349,21 @@ class PacketHandler
         s_Chat.ChatInfo.PlayerName = player.Info.Name;
         s_Chat.ChatInfo.Chat = c_Chat.Message;
 
+        Random random = new Random();
+        int rndId = random.Next(int.MinValue, int.MaxValue);
+
+        
         S_ChatSpawn s_ChatSpawn = new S_ChatSpawn();
         s_ChatSpawn.ChatInfo = new ChatInfo();
         s_ChatSpawn.ChatInfo.MergeFrom(s_Chat.ChatInfo);
-        s_ChatSpawn.SenderId = player.Id;
+        s_ChatSpawn.SenderId = player.Id; ;
+        s_ChatSpawn.ChatId = rndId;
 
-        room.Push(room.Broadcast, player, s_Chat);
-        room.Push(room.BroadcastVisionCube, player.CellPos, s_ChatSpawn);
+        room.Push(room.Broadcast, s_Chat);
+        room.Push(room.HandleChat, player,room, s_ChatSpawn);
+        //room.PushAfter(5000,room.BroadcastVisionCube, player.CellPos, s_ChatDespawn);
+        //room.Push(room.Broadcast, player, s_ChatSpawn);
+        //room.PushAfter(5000, room.Broadcast, player, s_ChatDespawn);
 
     }
 }

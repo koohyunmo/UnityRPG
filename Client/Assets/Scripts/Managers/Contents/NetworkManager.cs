@@ -12,7 +12,7 @@ public class NetworkManager
 	public int AccountId {get;set;}
 	public int Token {get;set;}
 	public string PlayerName{get;set;}
-	public int PlayerUniqueId { get; set; }
+	public int PlayerDbId { get; set; }
 
 	public void Send(IMessage sendBuff)
 	{

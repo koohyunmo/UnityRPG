@@ -97,8 +97,32 @@ public class MyPlayerController : PlayerController
                 _coSkillCoolTime = StartCoroutine(CoInputCoolTime(0.25f));
             }
         }
+        else if(Input.GetKey(KeyCode.Q))
+        {
+            if (_coSkillCoolTime == null)
+            {
+                Debug.Log("Use Arrow Skill");
 
-        if(Input.GetKeyDown(KeyCode.Z))
+                C_Skill skill = new C_Skill() { Info = new SkillInfo() };
+                skill.Info.SkillId = 3;
+                Managers.Network.Send(skill);
+                _coSkillCoolTime = StartCoroutine(CoInputCoolTime(0.25f));
+            }
+        }
+        else if (Input.GetKey(KeyCode.W))
+        {
+            if (_coSkillCoolTime == null)
+            {
+                //Debug.Log("Use Arrow Skill");
+
+                C_Skill skill = new C_Skill() { Info = new SkillInfo() };
+                skill.Info.SkillId = 4;
+                Managers.Network.Send(skill);
+                _coSkillCoolTime = StartCoroutine(CoInputCoolTime(0.25f));
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Z))
         {
             C_Teleport teleport = new C_Teleport();
             Managers.Network.Send(teleport);
@@ -122,19 +146,19 @@ public class MyPlayerController : PlayerController
     void GetDirInput()
     {
         _moveKeyPressed = true;
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.UpArrow))
         {
             Dir = MoveDir.Up;
         }
-        else if (Input.GetKey(KeyCode.S))
+        else if (Input.GetKey(KeyCode.DownArrow))
         {
             Dir = MoveDir.Down;
         }
-        else if (Input.GetKey(KeyCode.A))
+        else if (Input.GetKey(KeyCode.LeftArrow))
         {
             Dir = MoveDir.Left;
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.RightArrow))
         {
             Dir = MoveDir.Right;
         }

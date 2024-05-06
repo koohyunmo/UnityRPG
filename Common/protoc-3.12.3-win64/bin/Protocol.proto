@@ -46,6 +46,8 @@ enum MsgId {
   C_CHAT = 38;
   S_CHAT = 39;
   S_CHAT_SPAWN = 40;
+  S_CHAT_DESPAWN =41;
+  S_SPAWN_DAMAGE = 42;
 }
 
 enum CreatureState {
@@ -67,6 +69,7 @@ enum GameObjectType {
   PLAYER = 1;
   MONSTER = 2;
   PROJECTILE = 3;
+  CHAT = 4;
 }
 
 enum SkillType {
@@ -143,6 +146,11 @@ message S_Skill {
 message S_ChangeHp {
   int32 objectId = 1;
   int32 hp = 2;
+}
+message S_SpawnDamage
+{
+	int32 hitObjectId=1;
+	int32 damage=2;
 }
 
 message S_Die {
@@ -293,9 +301,14 @@ message S_Chat
 
 message S_ChatSpawn
 {
-	int32 senderId = 1;
-	ChatInfo chatInfo = 2;
-
+	int32 chatId = 1;
+	int32 senderId = 2;
+	ChatInfo chatInfo = 3;
+}
+message S_ChatDespawn
+{
+	int32 chatId = 1;
+	int32 senderId = 2;
 }
 
 message ChatInfo
@@ -322,6 +335,7 @@ message PositionInfo {
   MoveDir moveDir = 2;
   int32 posX = 3;
   int32 posY = 4;
+  int32 tileInfo = 5;
 }
 
 message StatInfo {

@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class PacketHandler
@@ -58,7 +59,15 @@ public class PacketHandler
 		}
 
 		if (Managers.Object.MyPlayer.Id == movePacket.ObjectId)
+		{
+			if(movePacket.PosInfo.TileInfo != 0 && movePacket.PosInfo.TileInfo != 1)
+			{
+				//TODO
+				//Debug.Log($"타일 INFO {movePacket.PosInfo.TileInfo}");
+			}
 			return;
+		}
+		
 		BaseController bc = go.GetComponent<BaseController>();
 		if (bc == null)
 			return;
@@ -94,20 +103,16 @@ public class PacketHandler
 
 	public static void S_ChangeHpHandler(PacketSession session, IMessage packet)
 	{
-		S_ChangeHp changeHpPacket = packet as S_ChangeHp;
-		ServerSession serverSession = session as ServerSession;
+		S_ChangeHp changePacket = packet as S_ChangeHp;
 
-		GameObject go = Managers.Object.FindById(changeHpPacket.ObjectId);
+		GameObject go = Managers.Object.FindById(changePacket.ObjectId);
 		if (go == null)
-		{
 			return;
-		}
 
 		CreatureController cc = go.GetComponent<CreatureController>();
-		if (cc)
+		if (cc != null)
 		{
-			cc.Hp = changeHpPacket.Hp;
-			//Util.PacketLog<S_ChangeHp>($"S_ChangehpHandler |  Object_{changeHpPacket.ObjectId} Changed HP : ({changeHpPacket.Hp})");
+			cc.Hp = changePacket.Hp;
 		}
 	}
 
@@ -166,7 +171,7 @@ public class PacketHandler
 			Managers.Network.Send(enterGamePacket);
 
 			Managers.Network.PlayerName = info.Name;
-			Managers.Network.PlayerUniqueId = info.PlayerDbId;
+			Managers.Network.PlayerDbId = info.PlayerDbId;
 		}
 	}
 
@@ -379,6 +384,30 @@ public class PacketHandler
     public static void S_ChatSpawnHandler(PacketSession session, IMessage message)
     {
        S_ChatSpawn s_ChatSpawn= message as S_ChatSpawn;
-		Managers.Chat.AddLocalChat(s_ChatSpawn.SenderId, s_ChatSpawn.ChatInfo);
+	   Managers.Chat.AddBallonChat(s_ChatSpawn.SenderId,s_ChatSpawn.ChatId, s_ChatSpawn.ChatInfo);
+	   Debug.Log(s_ChatSpawn.ChatInfo.Chat);
+	}
+
+    internal static void S_ChatDespawnHandler(PacketSession session, IMessage message)
+    {
+        S_ChatDespawn s_ChatDespawn = message as S_ChatDespawn;
+		Managers.Chat.ClearBallonChat(s_ChatDespawn.SenderId,s_ChatDespawn.ChatId);
+    }
+
+    public static void S_SpawnDamageHandler(PacketSession session, IMessage message)
+    {
+		S_SpawnDamage s_SpawnDamage = message as S_SpawnDamage;
+
+		GameObject hitObj = Managers.Object.FindById(s_SpawnDamage.HitObjectId);
+		if(hitObj == null) return;
+
+		GameObject tmp = Managers.Resource.Instantiate("Text/DamageTMP");
+		if (tmp != null)
+		{
+			tmp.transform.position = Managers.Map.CurrentGrid.CellToWorld(hitObj.GetComponent<BaseController>().CellPos) + Vector3.up + new Vector3(0.5f, 0.5f);
+			var dmageTmp = tmp.GetComponent<DamageTMP>();
+			dmageTmp.Spawn(s_SpawnDamage.Damage);
+			GameObject.Destroy(tmp,1);
+		}
 	}
 }

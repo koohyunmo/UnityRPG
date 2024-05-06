@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using static Define;
 
 public class PlayerController : CreatureController
@@ -10,9 +11,30 @@ public class PlayerController : CreatureController
     protected Coroutine _coSkill;
     protected bool _rangedSkill = false;
 
+    GameObject playerNameCanvas = null;
+
     protected override void Init()
     {
         base.Init();
+
+
+    }
+
+    public void SetName(string name)
+    {
+        if (playerNameCanvas == null)
+        {
+            playerNameCanvas = Managers.Resource.Instantiate("Text/PlayerNameText", transform);
+            playerNameCanvas.transform.localPosition = new Vector3(0, -0.8f, 0);
+            playerNameCanvas.GetComponentInChildren<Text>().color = Managers.Object.MyPlayer.Id == Id ? Color.green : Color.cyan;
+            playerNameCanvas.GetComponentInChildren<Text>().text = name;
+        }
+        else
+        {
+            playerNameCanvas.GetComponentInChildren<Text>().color = Managers.Object.MyPlayer.Id == Id ? Color.green : Color.cyan;
+            playerNameCanvas.GetComponentInChildren<Text>().text = name;
+        }
+
     }
 
     protected override void UpdateAnimation()
@@ -142,4 +164,6 @@ public class PlayerController : CreatureController
             _coSkill = StartCoroutine(CoStartShootArrow());
        }
     }
+
+
 }

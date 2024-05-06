@@ -17,8 +17,34 @@
         "name": "화살",
         "speed": "30.0",
         "range": "10",
-        "prefab" : "Creture/Arrow"
+        "prefab": "Creture/Arrow"
+      }
+    },
+    {
+      "id": 3,
+      "name": "삼중화살",
+      "cooldown": "3",
+      "damage": "5",
+      "skillType": "SkillProjectile",
+      "projectile": {
+        "name": "화살",
+        "speed": "30.0",
+        "range": "10",
+        "prefab": "Creture/Arrow"
+      }
+    },
+    {
+      "id": 4,
+      "name": "원형화살",
+      "cooldown": "5",
+      "damage": "2",
+      "skillType": "SkillProjectile",
+      "projectile": {
+        "name": "화살",
+        "speed": "15.0",
+        "range": "10",
+        "prefab": "Creture/Arrow"
       }
     }
   ]
-} 
+}
