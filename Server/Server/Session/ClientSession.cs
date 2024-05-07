@@ -84,7 +84,7 @@ namespace Server
 			List<ArraySegment<byte>> sendList = null;
 			lock (_lock)
 			{
-				// 0.1초가 지났거나, 1만바이트 패킷이 쌓였을때
+				// 0.1초가 지났거나, 1024바이트 패킷이 쌓였을때
 				long delta = (System.Environment.TickCount64 - _lastSendTick);
 				if (delta < 100 && _reservedSendBytes < 1024)
 				//	return;

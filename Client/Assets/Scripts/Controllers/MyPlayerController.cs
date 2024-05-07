@@ -8,9 +8,19 @@ using static Item;
 
 public class MyPlayerController : PlayerController
 {
+    public enum PlayerInputStates
+    {
+        None,
+        ChatState,
+    }
+    public PlayerInputStates PlayerInputState {get; set;} = PlayerInputStates.None;
     bool _moveKeyPressed = false;
     public int WeaponDamage { get; private set;}
     public int ArmorDefence { get; private set; }
+
+    public override int Hp { get => base.Hp; set { base.Hp = value; Managers.Notify.ChangeHp();} }
+
+    public GameObject teleportInfo;
 
     protected override void Init()
     {
@@ -36,7 +46,9 @@ public class MyPlayerController : PlayerController
 
     private void GetUIKeyInput()
     {
-        if(Input.GetKeyDown(KeyCode.I))
+        if (PlayerInputState == PlayerInputStates.ChatState) return;
+
+        if (Input.GetKeyDown(KeyCode.I))
         {
             UI_GameScene gameScene = Managers.UI.SceneUI as UI_GameScene;
             if(gameScene)
@@ -83,6 +95,8 @@ public class MyPlayerController : PlayerController
             return;
         }
 
+        if (PlayerInputState == PlayerInputStates.ChatState) return;
+
         if (Input.GetKey(KeyCode.Space))
         {
             //Debug.Log($"Input Space : {State} _ Coroutine : {_coSkillCoolTime == null} ");
@@ -101,7 +115,7 @@ public class MyPlayerController : PlayerController
         {
             if (_coSkillCoolTime == null)
             {
-                Debug.Log("Use Arrow Skill");
+                //Debug.Log("Use Arrow Skill");
 
                 C_Skill skill = new C_Skill() { Info = new SkillInfo() };
                 skill.Info.SkillId = 3;
@@ -166,6 +180,14 @@ public class MyPlayerController : PlayerController
         {
             _moveKeyPressed = false;
         }
+
+        if(_moveKeyPressed)
+        {
+            PlayerInputState = PlayerInputStates.None;
+        }
+
+
+
     }
 
     protected override void MoveToNextPos()
@@ -242,4 +264,5 @@ public class MyPlayerController : PlayerController
         }
 
     }
+
 }

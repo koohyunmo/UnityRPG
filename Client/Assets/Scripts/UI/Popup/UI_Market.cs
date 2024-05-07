@@ -18,7 +18,7 @@ public class UI_Market : UI_ServicePopup
 
         C_ReqMarketList c_ReqMarketList= new C_ReqMarketList();
         Managers.Network.Send(c_ReqMarketList);
-        Managers.Market.ApiSyncCallback(MakeItemList);
+        Managers.Market.APISyncCallback(MakeItemList);
     }
 
     private void MakeItemList()
@@ -28,14 +28,8 @@ public class UI_Market : UI_ServicePopup
         {
             foreach (var item in Managers.Market.MarketItems)
             {
-                MarketItem newItem = new MarketItem()
-                {
-                    ItemDbId = item.ItemDbId,
-                    Price = item.Price,
-                    SellerId = item.SellerId,
-                    SellerName = item.SellerName,
-                    TemplateId = item.TemplateId
-                };
+                MarketItem newItem = new MarketItem();
+                newItem.MergeFrom(item);
 
                 marketItems.Add(newItem);
                 GameObject go = Managers.Resource.Instantiate("UI/Popup/UI_MarketItem", sharedContentGrid);

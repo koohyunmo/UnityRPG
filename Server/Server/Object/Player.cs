@@ -39,7 +39,25 @@ namespace Server.Object
 
         public override void OnDead(GameObject attacker)
         {
-            base.OnDead(attacker);
+            if (Room == null)
+                return;
+
+            S_Die diePacket = new S_Die();
+            diePacket.ObjectId = Id;
+            diePacket.AttackerId = attacker.Id;
+            Console.WriteLine($"Die Object_{diePacket.ObjectId} By Attacker_{diePacket.ObjectId}");
+            Room.BroadcastVisionCube(CellPos, diePacket);
+
+            //GameRoom room = Room;
+            //Room.LeaveGame(Id);
+
+            //Stat.Hp = Stat.MaxHp;
+            //PosInfo.State = CreatureState.Idle;
+            //PosInfo.MoveDir = MoveDir.Down;
+
+            //room.Push(room.EnterGame, this, true);
+
+            Room.Push(Room.HandlePlayerHomeTeleport, this);
         }
 
         public void OnLeaveGame()

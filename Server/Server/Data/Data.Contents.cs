@@ -130,6 +130,7 @@ namespace Server.Data
     {
         public int id;
         public string name;
+        public string prefab;
         public StatInfo stat;
         public List<RewardData> rewards;
     }

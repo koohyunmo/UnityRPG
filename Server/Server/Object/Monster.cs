@@ -29,7 +29,7 @@ namespace Server.Object
             Stat.Hp = monster.stat.MaxHp;
             State = CreatureState.Idle;
         }
-        IJob _job;
+        protected IJob _job;
         public override void Update()
         {
             switch (State)
@@ -200,19 +200,20 @@ namespace Server.Object
 
             // TODO 아이템 생성
             var onwer = attacker.GetOwner();
+
             if (onwer.ObjectType == GameObjectType.Player)
             {
+                Player player = (Player)onwer;
                 RewardData rewardData = GetRandomReward();
                 if(rewardData !=null)
                 {
-                    Player player = (Player)onwer;
                     MyDbTransaction.RewardPlayer(player, rewardData, Room);
                 }
                 else
                 {
-                    Player player = (Player)onwer;
                     MyDbTransaction.RewardGold(player, 10, Room);
                 }
+                MyDbTransaction.RewardExp(player, 10, Room);
             }
 
             if(_job != null)
@@ -224,7 +225,7 @@ namespace Server.Object
             base.OnDead(attacker);
         }
 
-        RewardData GetRandomReward()
+        protected RewardData GetRandomReward()
         {
             MonsterData monsterData = null;
             DataManager.MonsterDict.TryGetValue(TemplateId, out monsterData);

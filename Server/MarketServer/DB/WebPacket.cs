@@ -51,3 +51,16 @@ public struct MarketItem
     public string SellerName { get; set;}
 }
 
+public class DeleteItemPacketReq
+{
+    public int BuyerId { get; set; }
+    public int TemplateId { get; set; }
+    public int ItemId { get; set; }
+    public int SellerId { get; set; }
+}
+
+public class DeleteItemPacketRes
+{
+    public bool DeleteOk { get; set; }
+}
+

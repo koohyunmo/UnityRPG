@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class ResourceManager
@@ -68,5 +69,23 @@ public class ResourceManager
         }
 
         Object.Destroy(go);
+    }
+    public void Destroy(GameObject go, float t)
+    {
+        int time = (int)(t *1000);
+        Thread.Sleep(time);
+
+        if (go == null)
+            return;
+
+        Poolable poolable = go.GetComponent<Poolable>();
+        if (poolable != null)
+        {
+            Managers.Pool.Push(poolable);
+            return;
+        }
+
+        Object.Destroy(go);
+
     }
 }

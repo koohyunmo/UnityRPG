@@ -122,6 +122,9 @@ namespace Server.Migrations
                     b.Property<int>("Attack")
                         .HasColumnType("int");
 
+                    b.Property<int>("CurrentExp")
+                        .HasColumnType("int");
+
                     b.Property<int>("Gold")
                         .HasColumnType("int");
 

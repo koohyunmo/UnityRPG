@@ -52,7 +52,9 @@ namespace Server
                                 Attack = playerDb.Attack,
                                 Speed = playerDb.Speed,
                                 TotalExp = playerDb.TotalExp,
+                                CurrentExp = playerDb.CurrentExp,
                             },
+                            Gold = playerDb.Gold,
                         };
                         // 메모리에 들고 있다.
                         LobbyPlayers.Add(lobbyPlayer);
@@ -116,8 +118,10 @@ namespace Server
                         MaxHp = stat.MaxHp,
                         Attack = stat.Attack,
                         Speed = stat.Speed,
-                        TotalExp = 0,
-                        AccountDbId = AccountDbId
+                        TotalExp = stat.TotalExp,
+                        CurrentExp =0,
+                        AccountDbId = AccountDbId,
+                        Gold = 1000
                     };
 
                     db.Players.Add(newPlayerDb);
@@ -169,7 +173,7 @@ namespace Server
                 MyPlayer.Info.PosInfo.PosX = 0;
                 MyPlayer.Info.PosInfo.PosY = 0;
                 MyPlayer.Stat.MergeFrom(playerInfo.StatInfo);
-                MyPlayer.Session = this;;
+                MyPlayer.Session = this;
 
                 S_ItemList itemListPacket = new S_ItemList();
 
@@ -197,12 +201,12 @@ namespace Server
                 }
                 Send(itemListPacket);
             }
-
+            // 플레이어 스폰 관리
             ServerState = PlayerServerState.ServerStateGame;
             GameLogic.Instance.Push(() =>
             {
                 GameRoom room = GameLogic.Instance.Find(1);
-                room.Push(room.EnterGame, MyPlayer,false);
+                room.Push(room.EnterGame, MyPlayer,true);
 
                 Console.WriteLine($"Entered Player {MyPlayer.Info.Name} ");
             });

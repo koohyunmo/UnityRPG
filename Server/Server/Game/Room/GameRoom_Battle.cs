@@ -52,16 +52,39 @@ namespace Server.Game
             if (Map.IsPortal(player.CellPos))
             {
                 S_Teleport resTeleportPacket = new S_Teleport();
-                resTeleportPacket.MapId = 2;
+                resTeleportPacket.MapId = Map.GetTileInfo(player.CellPos);
+                resTeleportPacket.MapId = resTeleportPacket.MapId == 3 ? 1 : resTeleportPacket.MapId;
+                resTeleportPacket.MapId = resTeleportPacket.MapId == 4 ? 3 : resTeleportPacket.MapId;
+
+                GameRoom newRoom = GameLogic.Instance.Find(resTeleportPacket.MapId);
+                if (newRoom == null)
+                {
+                    Console.WriteLine($"미구현맵 Map_{resTeleportPacket.MapId}"); 
+                    return;
+                }
+
 
                 LeaveGame(player.Id);
                 Unicast(player, resTeleportPacket);
-                GameRoom newRoom = GameLogic.Instance.Find(2);
+
                 newRoom.Push(newRoom.EnterGame, player, true);
+
             }
-
-
         }
+        public void HandlePlayerHomeTeleport(Player player)
+        {
+            if (player == null)
+                return;
+
+            S_Teleport resTeleportPacket = new S_Teleport();
+            resTeleportPacket.MapId = 1;
+
+            LeaveGame(player.Id);
+            Unicast(player, resTeleportPacket);
+            GameRoom newRoom = GameLogic.Instance.Find(resTeleportPacket.MapId);
+            newRoom.Push(newRoom.EnterGame, player, true);
+        }
+
         static Dictionary<int, Dictionary<int, long>> _playerSkillCoolDowns = new Dictionary<int, Dictionary<int, long>>();
         public void HandleSkill(Player player, C_Skill skillPacket)
         {

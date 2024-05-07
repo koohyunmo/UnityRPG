@@ -41,6 +41,7 @@ public class ObjectManager
                 MyPlayer.Stat.MergeFrom(info.StatInfo);
                 MyPlayer.SyncPos();
                 MyPlayer.SetName(info.Name);
+                Managers.Notify.ChangeUserInfo();
             }
             else
             {
@@ -58,7 +59,6 @@ public class ObjectManager
         }
         else if(objectType == GameObjectType.Monster)
         {
-            //Debug.Log("몬스터 생성");
             GameObject go = Managers.Resource.Instantiate("Creature/Monster");
             go.name = info.Name;
             _objects.Add(info.ObjectId, go);
@@ -68,6 +68,22 @@ public class ObjectManager
             mc.PosInfo = info.PosInfo;
             mc.Stat.MergeFrom(info.StatInfo);
             mc.SyncPos();
+        }
+        else if (objectType == GameObjectType.BossMonster)
+        {
+            //Debug.Log("몬스터 생성");
+
+            GameObject go = Managers.Resource.Instantiate("Creature/BossMonster");
+            go.name = info.Name;
+            _objects.Add(info.ObjectId, go);
+
+            MonsterController mc = go.GetComponent<MonsterController>();
+            mc.Id = info.ObjectId;
+            mc.PosInfo = info.PosInfo;
+            mc.Stat.MergeFrom(info.StatInfo);
+            mc.SyncPos();
+
+            Debug.Break();
         }
         else if(objectType == GameObjectType.Projectile)
         {

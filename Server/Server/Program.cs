@@ -100,6 +100,7 @@ namespace Server
             {
                 GameRoom room = GameLogic.Instance.Add(1);
                 GameRoom battleRoom = GameLogic.Instance.Add(2);
+                GameRoom bossRoom = GameLogic.Instance.Add(4);
             });
 
             // DNS (Domain Name System)

@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using DummyClient.Session;
+using Google.Protobuf.Protocol;
 using ServerCore;
 using System.Diagnostics;
 using System.Net;
@@ -11,7 +12,7 @@ namespace DummyClient
 
     class Program
     {
-        static int DummyClientCount { get; } = 100;
+        static int DummyClientCount { get; } = 25;
         static void Main(string[] args)
         {
 

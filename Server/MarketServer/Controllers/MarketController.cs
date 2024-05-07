@@ -126,8 +126,13 @@ namespace MarketServer.Controllers
 
             try
             {
+                if(req.SellerId == req.BuyerId)
+                {
+                    res.ItemPurchaseOk = false;
+                    return res;
+                }
                 var buyer = _gameDbContext.Players
-                    .Where(p => p.PlayerDbId.Equals(req.BuyerId))
+                    .Where(p => p.PlayerDbId == (req.BuyerId))
                     .FirstOrDefault();
 
                 if (buyer == null)
@@ -159,16 +164,17 @@ namespace MarketServer.Controllers
                     return res;
                 }
 
-               //if (buyer.Gold < marketItem.Price)
-               //{
-               //    res.ItemPurchaseOk = false;
-               //     Console.WriteLine("price check");
-               //     return res;
-               //}
+                if (buyer.Gold < marketItem.Price)
+                {
+                    res.ItemPurchaseOk = false;
+                     Console.WriteLine("price check");
+                     return res;
+                }
 
                 // Deduct gold from the buyer's account
                 var buyerMail = _gameDbContext.Mails;
-                buyer.Gold -= marketItem.Price;
+                buyer.Gold = buyer.Gold  -  marketItem.Price;
+                sucess1 = _gameDbContext.SaveChangesEx();
                 buyerMail.Add(new Server.DB.MailDb()
                 {
                     OwnerId = buyer.PlayerDbId,
@@ -180,11 +186,10 @@ namespace MarketServer.Controllers
                     Owner = buyer,
                     TemplateId = marketItem.TemplateId
                 });
-               sucess1 = _gameDbContext.SaveChangesEx();
+               sucess1 = _gameDbContext.SaveChangesEx() && sucess1;
 
-               seller.Gold += marketItem.Price;
+               seller.Gold = seller.Gold  + marketItem.Price;
                sucess2 = _gameDbContext.SaveChangesEx();
-
 
                 // Assuming the item is being removed from the market or some status is updated
                 marketItem.IsSold = true;  // This is an example property
@@ -195,7 +200,7 @@ namespace MarketServer.Controllers
                     transaction1.Commit();
                     transaction2.Commit();
                     res.ItemPurchaseOk = true;
-                    Console.WriteLine($" {req.SellerId} => {marketItem.TemplateId} => {req.BuyerId}");
+                    Console.WriteLine($" {seller.PlayerName} => {marketItem.TemplateId} => {buyer.PlayerName}");
                 }
             }
             catch (Exception ex)
@@ -224,76 +229,71 @@ namespace MarketServer.Controllers
 
         [HttpPost]
         [Route("delete")]
-        public PurchaseItemPacketRes DeleteMarketItem([FromBody] PurchaseItemPacketReq req)
+        public DeleteItemPacketRes DeleteMarketItem([FromBody] DeleteItemPacketReq req)
         {
-            PurchaseItemPacketRes res = new PurchaseItemPacketRes();
+            DeleteItemPacketRes res = new DeleteItemPacketRes();
 
             using var transaction1 = _gameDbContext.Database.BeginTransaction();
             using var transaction2 = _context.Database.BeginTransaction();
 
             bool sucess1 = false;
             bool sucess2 = false;
-            bool sucess3 = false;
 
             try
             {
 
                 if (req.SellerId != req.BuyerId)
                 {
-                    res.ItemPurchaseOk = false;
+                    res.DeleteOk = false;
                     return res;
                 }
 
                 var buyer = _gameDbContext.Players
-                    .Where(p => p.PlayerName.Equals(req.BuyerId))
+                    .Where(p => p.PlayerDbId == (req.BuyerId))
                     .FirstOrDefault();
 
                 if (buyer == null)
                 {
                     Console.WriteLine("Buyer is Null");
-                    res.ItemPurchaseOk = false;
+                    res.DeleteOk = false;
                     return res;
                 }
 
                 var marketItem = _context.MarketItems
-                    .Where(i => i.ItemDbId == req.ItemDbId && i.SellerId == req.SellerId && i.Price == req.Price)
+                    .Where(i => i.ItemDbId == req.ItemId && i.SellerId == req.SellerId)
                     .FirstOrDefault();
 
                 if (marketItem == null)
                 {
                     Console.WriteLine($"marketItem is Null {req.SellerId}");
-                    res.ItemPurchaseOk = false;
+                    res.DeleteOk = false;
                     return res;
                 }
-
-                var seller = _gameDbContext.Players
-                    .Where(p => p.PlayerDbId.Equals(req.SellerId))
-                    .FirstOrDefault();
-
-                if (seller == null)
-                {
-                    Console.WriteLine("seller is Null");
-                    res.ItemPurchaseOk = false;
-                    return res;
-                }
-
-
-                // Deduct gold from the buyer's account
-                buyer.Gold += marketItem.Price;
-                sucess2 = _gameDbContext.SaveChangesEx();
 
                 _context.MarketItems.Remove(marketItem);
                 sucess1 = _context.SaveChangesEx();
 
-                buyer.Items.Add(new Server.DB.ItemDb {Equipped = false, Owner = buyer,TemplateId = marketItem.TemplateId, Count=1}) ;
-                sucess3 = _gameDbContext.SaveChangesEx();
+
+                var buyerMail = _gameDbContext.Mails;
+                buyerMail.Add(new Server.DB.MailDb()
+                {
+                    OwnerId = buyer.PlayerDbId,
+                    SenderName = buyer.PlayerName,
+                    SenderId = buyer.PlayerDbId,
+                    ReceicerId = buyer.PlayerDbId,
+                    Count = 1,
+                    Read = false,
+                    Owner = buyer,
+                    TemplateId = marketItem.TemplateId
+                });
+                sucess2 = _gameDbContext.SaveChangesEx();
 
 
-                if (sucess1 && sucess2 && sucess3)
+                if (sucess1 && sucess2)
                 {
                     transaction1.Commit();
                     transaction2.Commit();
-                    res.ItemPurchaseOk = true;
+                    res.DeleteOk = true;
                 }
             }
             catch (Exception ex)
@@ -301,16 +301,16 @@ namespace MarketServer.Controllers
                 transaction1.Rollback();
                 transaction2.Rollback();
                 Console.WriteLine(ex);
-                res.ItemPurchaseOk = false;
+                res.DeleteOk = false;
                 return res;
             }
 
 
-            if (sucess1 == false || sucess2 == false || sucess3 == false)
+            if (sucess1 == false || sucess2 == false)
             {
                 transaction1.Rollback();
                 transaction2.Rollback();
-                res.ItemPurchaseOk = false;
+                res.DeleteOk = false;
             }
 
             transaction1.Dispose();

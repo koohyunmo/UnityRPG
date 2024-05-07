@@ -97,4 +97,16 @@ namespace Server.DB
         public bool ItemPurchaseOk;
     }
 
+    public class DeleteItemPacketReq
+    {
+        public int BuyerId;
+        public int TemplateId;
+        public int ItemId;
+        public int SellerId;
+    }
+
+    public class DeleteItemPacketRes
+    {
+        public bool DeleteOk;
+    }
 }

@@ -187,4 +187,20 @@ public class PacketHandler
     {
 
     }
+
+    internal static void S_GoldChangeHandler(PacketSession session, IMessage message)
+    {
+    }
+
+    internal static void S_ExpChangeHandler(PacketSession session, IMessage message)
+    {
+    }
+
+    internal static void S_ExitGameHandler(PacketSession session, IMessage message)
+    {
+    }
+
+    internal static void S_MarketItemDeleteHandler(PacketSession session, IMessage message)
+    {
+    }
 }

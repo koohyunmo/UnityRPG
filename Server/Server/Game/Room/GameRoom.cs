@@ -76,6 +76,26 @@ namespace Server.Game
                     EnterGame(monster, randomPos: true);
                 }
             }
+            if (mapId == 4)
+            {
+                // TEMP
+                for (int i = 0; i < 1; i++)
+                {
+                    Monster boss = ObjectManager.Instance.Add<Monster>();
+                    boss.Init(2);
+                    EnterGame(boss, randomPos: true);
+                }
+            }
+            if (mapId == 3)
+            {
+                // TEMP
+                for (int i = 0; i < 1; i++)
+                {
+                    Monster boss = ObjectManager.Instance.Add<Monster>();
+                    boss.Init(2);
+                    EnterGame(boss, randomPos: true);
+                }
+            }
 
         }
 

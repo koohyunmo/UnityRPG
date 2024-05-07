@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.Protocol;
+using Microsoft.EntityFrameworkCore;
 using Server;
 using Server.Data;
 using Server.DB;
@@ -102,7 +103,6 @@ class PacketHandler
     {
         C_Teleport teleportPacket = (C_Teleport)packet;
         ClientSession clientSession = (ClientSession)session;
-
 
 
         Player player = clientSession.MyPlayer;
@@ -238,6 +238,26 @@ class PacketHandler
             if (res.ItemPurchaseOk)
             {
                 purchaseResPacket.ItemPurchaseOk = res.ItemPurchaseOk;
+
+
+                using (AppDbContext db = new AppDbContext())
+                {
+                    PlayerDb buyerDb = db.Players.AsNoTracking().Where(p => p.PlayerDbId == purchasePacket.BuyerId).FirstOrDefault();
+                    if (buyerDb != null)
+                    {
+                        S_GoldChange gold = new S_GoldChange();
+                        gold.Gold = buyerDb.Gold;
+                        room.Push(room.Unicast, player, gold);
+                    }
+
+                    PlayerDb seller = db.Players.AsNoTracking().Where(p => p.PlayerDbId == purchasePacket.SellerId).FirstOrDefault();
+                    if (seller != null)
+                    {
+                        S_GoldChange gold = new S_GoldChange();
+                        gold.Gold = seller.Gold;
+                        room.Push(room.Unicast, player, gold);
+                    }
+                }
             }
             else
             {
@@ -245,6 +265,40 @@ class PacketHandler
             }
 
             room.Push(room.Unicast, player, purchaseResPacket);
+
+        });
+    }
+    public static async void C_MarketItemDeleteHandler(PacketSession session, IMessage packet)
+    {
+        C_MarketItemDelete deletePacket = (C_MarketItemDelete)packet;
+        ClientSession clientSession = (ClientSession)session;
+
+        Player player = clientSession.MyPlayer;
+        if (player == null)
+            return;
+        GameRoom room = player.Room;
+        if (room == null)
+            return;
+
+        S_MarketItemDelete s_MarketItemDelete = new S_MarketItemDelete();
+        DeleteItemPacketReq req = new DeleteItemPacketReq();
+        req.ItemId = deletePacket.Item.ItemDbId;
+        req.SellerId = deletePacket.Item.SellerId;
+        req.TemplateId = deletePacket.Item.TemplateId;
+        req.BuyerId = player.PlayerDbId;
+
+        await MyAPIHandler.SendPostRequestMarket<DeleteItemPacketRes>("market/delete", req, (res) => {
+
+            if (res.DeleteOk)
+            {
+                s_MarketItemDelete.DeleteOk = res.DeleteOk;
+            }
+            else
+            {
+                s_MarketItemDelete.DeleteOk = res.DeleteOk;
+            }
+
+            room.Push(room.Unicast, player, s_MarketItemDelete);
         });
     }
 
@@ -366,4 +420,27 @@ class PacketHandler
         //room.PushAfter(5000, room.Broadcast, player, s_ChatDespawn);
 
     }
+
+    public static void C_ExitGameHandler(PacketSession session, IMessage message)
+    {
+        C_ExitGame exitPacket = (C_ExitGame)message;
+        ClientSession clientSession = (ClientSession)session;
+
+        Player player = clientSession.MyPlayer;
+        if (player == null)
+            return;
+        GameRoom room = player.Room;
+        if (room == null)
+            return;
+
+
+        S_ExitGame s_ExitGame = new S_ExitGame();
+        s_ExitGame.Exit = exitPacket.Exit;
+
+        room.Push(room.LeaveGame, player.Id);
+        player.Session.Send(s_ExitGame);
+        clientSession.Disconnect();
+    }
+
+
 }

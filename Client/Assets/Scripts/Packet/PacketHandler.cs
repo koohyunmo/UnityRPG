@@ -62,8 +62,11 @@ public class PacketHandler
 		{
 			if(movePacket.PosInfo.TileInfo != 0 && movePacket.PosInfo.TileInfo != 1)
 			{
-				//TODO
-				//Debug.Log($"타일 INFO {movePacket.PosInfo.TileInfo}");
+				Managers.Object.MyPlayer.teleportInfo.SetActive(true);
+			}
+			else
+			{
+				Managers.Object.MyPlayer.teleportInfo.SetActive(false);
 			}
 			return;
 		}
@@ -161,6 +164,7 @@ public class PacketHandler
 			createPlayerPacket.Name = $"Player_{UnityEngine.Random.Range(0, 10000000).ToString()}";
 			Managers.Network.Send(createPlayerPacket);
 			Managers.Network.PlayerName = createPlayerPacket.Name;
+			Managers.Notify.GoldChange(0);
 		}
 		else
 		{
@@ -172,7 +176,12 @@ public class PacketHandler
 
 			Managers.Network.PlayerName = info.Name;
 			Managers.Network.PlayerDbId = info.PlayerDbId;
+
+			Managers.Notify.GoldChange(loginPacket.Players[0].Gold);
 		}
+
+
+
 	}
 
 	public static void S_CreatePlayerHandler(PacketSession session, IMessage packet)
@@ -328,18 +337,37 @@ public class PacketHandler
 		{
 			C_ReqMarketList c_ReqMarketList = new C_ReqMarketList();
 			Managers.Network.Send(c_ReqMarketList);
-			Debug.Log("구매성공");
+			Debug.Log("구매 성공");
 		}
 		else
 		{
 			C_ReqMarketList c_ReqMarketList = new C_ReqMarketList();
 			Managers.Network.Send(c_ReqMarketList);
-			Debug.Log("구매실패");
+			Debug.Log("구매 실패");
 		}
 
 	}
 
-    public static void S_MailItemListHandler(PacketSession session, IMessage packet)
+	public static void S_MarketItemDeleteHandler(PacketSession session, IMessage packet)
+	{
+		S_MarketItemDelete s_deleteItemPacket = packet as S_MarketItemDelete;
+
+		if (s_deleteItemPacket.DeleteOk)
+		{
+			C_ReqMarketList c_ReqMarketList = new C_ReqMarketList();
+			Managers.Network.Send(c_ReqMarketList);
+			Debug.Log("삭제 성공");
+		}
+		else
+		{
+			C_ReqMarketList c_ReqMarketList = new C_ReqMarketList();
+			Managers.Network.Send(c_ReqMarketList);
+			Debug.Log("삭제 실패");
+		}
+
+	}
+
+	public static void S_MailItemListHandler(PacketSession session, IMessage packet)
     {
 		S_MailItemList s_MailItemList = packet as S_MailItemList;
 		if(s_MailItemList.MailItems != null && s_MailItemList.MailItems.Count > 0)
@@ -385,7 +413,7 @@ public class PacketHandler
     {
        S_ChatSpawn s_ChatSpawn= message as S_ChatSpawn;
 	   Managers.Chat.AddBallonChat(s_ChatSpawn.SenderId,s_ChatSpawn.ChatId, s_ChatSpawn.ChatInfo);
-	   Debug.Log(s_ChatSpawn.ChatInfo.Chat);
+	   //Debug.Log(s_ChatSpawn.ChatInfo.Chat);
 	}
 
     internal static void S_ChatDespawnHandler(PacketSession session, IMessage message)
@@ -406,8 +434,43 @@ public class PacketHandler
 		{
 			tmp.transform.position = Managers.Map.CurrentGrid.CellToWorld(hitObj.GetComponent<BaseController>().CellPos) + Vector3.up + new Vector3(0.5f, 0.5f);
 			var dmageTmp = tmp.GetComponent<DamageTMP>();
-			dmageTmp.Spawn(s_SpawnDamage.Damage);
+			dmageTmp.SpawnDamage(s_SpawnDamage.Damage);
 			GameObject.Destroy(tmp,1);
 		}
 	}
+
+    public static void S_GoldChangeHandler(PacketSession session, IMessage message)
+    {
+       S_GoldChange s_GoldChange = message as S_GoldChange;
+
+	   // Noti
+	   Managers.Notify.GoldChange(s_GoldChange.Gold);
+	}
+
+    public static void S_ExpChangeHandler(PacketSession session, IMessage message)
+    {
+		S_ExpChange s_ExpChange= message as S_ExpChange;
+
+		Managers.Object.MyPlayer.Stat.MergeFrom(s_ExpChange.Stat);
+		Managers.Object.MyPlayer.Stat.CurrentExp = s_ExpChange.Stat.CurrentExp;
+		Managers.Object.MyPlayer.Stat.TotalExp = s_ExpChange.Stat.TotalExp;
+
+		Managers.Notify.ChangeUserInfo();
+
+	}
+
+    public static void S_ExitGameHandler(PacketSession session, IMessage message)
+    {
+        S_ExitGame s_ExitGame= message as S_ExitGame;
+		if(s_ExitGame.Exit)
+		{
+			Application.Quit();
+		}
+		else
+		{
+			Managers.Scene.LoadScene(Define.Scene.Login);
+		}
+    }
+
+
 }

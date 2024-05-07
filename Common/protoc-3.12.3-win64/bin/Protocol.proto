@@ -48,6 +48,12 @@ enum MsgId {
   S_CHAT_SPAWN = 40;
   S_CHAT_DESPAWN =41;
   S_SPAWN_DAMAGE = 42;
+  S_GOLD_CHANGE = 43;
+  S_EXP_CHANGE = 44;
+  C_EXIT_GAME = 45;
+  S_EXIT_GAME = 46;
+  S_MARKET_ITEM_DELETE = 47;
+  C_MARKET_ITEM_DELETE = 48;
 }
 
 enum CreatureState {
@@ -70,6 +76,7 @@ enum GameObjectType {
   MONSTER = 2;
   PROJECTILE = 3;
   CHAT = 4;
+  BOSS_MONSTER = 5;
 }
 
 enum SkillType {
@@ -271,6 +278,16 @@ message C_MarketItemPurchase
 	int32 price = 5;
 }
 
+message C_MarketItemDelete
+{
+	MarketItem item = 1;
+}
+
+message S_MarketItemDelete
+{
+	bool deleteOk =1;
+}
+
 message C_MailItemList
 {
 
@@ -310,6 +327,22 @@ message S_ChatDespawn
 	int32 chatId = 1;
 	int32 senderId = 2;
 }
+message S_GoldChange
+{
+	int32 gold =1;
+}
+message S_ExpChange
+{
+	StatInfo stat =1;
+}
+message C_ExitGame
+{
+	bool exit = 1;
+}
+message S_ExitGame
+{
+	bool exit = 1;
+}
 
 message ChatInfo
 {
@@ -321,6 +354,7 @@ message LobbyPlayerInfo {
   int32 playerDbId = 1;
   string name = 2;
   StatInfo statInfo = 3;
+  int32 gold=4;
 }
 
 message ObjectInfo {
@@ -345,6 +379,7 @@ message StatInfo {
   int32 attack = 4;
   float speed = 5;
   int32 totalExp = 6;
+  int32 currentExp = 7;
 }
 
 message SkillInfo {

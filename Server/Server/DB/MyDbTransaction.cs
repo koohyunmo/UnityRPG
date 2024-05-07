@@ -1,10 +1,12 @@
-﻿using Google.Protobuf.Protocol;
+﻿using Google.Protobuf;
+using Google.Protobuf.Protocol;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Server.Game;
 using Server.Migrations;
 using Server.Object;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -123,6 +125,7 @@ namespace Server.DB
                 using (AppDbContext db = new AppDbContext())
                 {
                     db.Items.Add(itemDb);
+
                     bool success = db.SaveChangesEx();
                     if (success)
                     {
@@ -272,7 +275,9 @@ namespace Server.DB
                         {
                             // Client Noti
                             {
-                                Console.WriteLine("TODO Client Notiy");
+                               S_GoldChange s_GoldChange = new S_GoldChange();
+                                s_GoldChange.Gold = playerDb.Gold;
+                                room.Push(room.Unicast, player,s_GoldChange);
                             }
                         });
                     }
@@ -280,6 +285,116 @@ namespace Server.DB
             });
 
         }
+
+        public static void RewardExp(Player player, int xp, GameRoom room)
+        {
+            const int MAX_LEVEL = 4;  // 최대 레벨 상수 정의
+
+            if (player == null)
+            {
+                Console.WriteLine("Player is null");
+                return;
+            }
+            if (room == null)
+            {
+                Console.WriteLine("room is null");
+                return;
+            }
+
+            // You
+            Instance.Push(() =>
+            {
+                using (AppDbContext db = new AppDbContext())
+                {
+                    using (var transaction = db.Database.BeginTransaction())  // 트랜잭션 시작
+                    {
+                        try
+                        {
+                            var playerDb = db.Players.Where(p => player.Info.Name == p.PlayerName).FirstOrDefault();
+                            if (playerDb == null)
+                                return;
+
+                            StatInfo stat = null;
+                            playerDb.CurrentExp += xp;
+                            if(playerDb.Level < MAX_LEVEL)
+                            {
+                                while (playerDb.CurrentExp >= playerDb.TotalExp)
+                                {
+                                    playerDb.CurrentExp -= playerDb.TotalExp;  // 초과 경험치를 저장
+                                    if (playerDb.Level == 3)
+                                    {
+                                        playerDb.Level = MAX_LEVEL;
+                                        playerDb.CurrentExp = 0;  // 최대 레벨에 도달했다면 경험치를 0으로 설정
+                                        playerDb.TotalExp = int.MaxValue;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        playerDb.Level += 1;
+                                        DataManager.StatDict.TryGetValue(playerDb.Level, out stat);
+
+                                        playerDb.Hp = stat.MaxHp;
+                                        playerDb.MaxHp = stat.MaxHp;
+                                        playerDb.Attack = stat.Attack;
+                                        playerDb.Speed = stat.Speed;
+                                        playerDb.TotalExp = stat.TotalExp;
+                                        playerDb.CurrentExp = Math.Max(0, playerDb.CurrentExp);
+                                    }
+                                   
+                                }
+                                //Console.WriteLine("레벨업");
+                            }
+
+                            if(db.SaveChangesEx())
+                                transaction.Commit();  // 트랜잭션 커밋
+      
+                            // Me
+                            room.Push(() =>
+                            {
+                                // Client Noti
+                                {
+                                    S_ExpChange s_changeExp = new S_ExpChange() { Stat = new StatInfo() };
+
+                                    if (stat == null)
+                                    {
+                                        // 경험치 변경 클라이언트 알람
+                                        s_changeExp.Stat.MergeFrom(player.Stat);
+                                        s_changeExp.Stat.Level = playerDb.Level;
+                                        s_changeExp.Stat.CurrentExp = playerDb.CurrentExp;
+                                        s_changeExp.Stat.TotalExp = playerDb.TotalExp;
+
+                                        // 메모리 수정
+                                        player.Stat.Level = playerDb.Level;
+                                        player.Stat.CurrentExp = playerDb.CurrentExp;
+                                        player.Stat.TotalExp = playerDb.TotalExp;
+                                    }
+                                    else
+                                    {
+                                        // 레벨업 클라이언트 알람
+                                        s_changeExp.Stat.MergeFrom(stat);
+                                        s_changeExp.Stat.TotalExp = playerDb.TotalExp;
+                                        s_changeExp.Stat.CurrentExp = playerDb.CurrentExp;
+
+                                        // 메모리 수정
+                                        player.Stat.MergeFrom(stat);
+                                        player.Stat.CurrentExp = playerDb.CurrentExp;
+                                    }
+
+                                    room.Push(room.Unicast, player, s_changeExp);
+                                }
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"An error occurred: {ex.Message}");
+                            transaction.Rollback();  // 에러 발생시 트랜잭션 롤백
+                        }
+                    }
+                }
+            });
+        }
+
+
 
 
         public static void SyncAndSendPlayerInventory(Player player)

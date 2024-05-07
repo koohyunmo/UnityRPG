@@ -3,12 +3,52 @@
     {
       "id": "1",
       "name": "빨간놈",
+      "prefab": "Creature/Monster",
       "stat": {
         "level": "1",
         "maxHp": "20",
         "attack": "5",
         "speed": "5.0",
         "totalExp": "10"
+      },
+      "rewards": [
+        {
+          "probability": "10",
+          "itemId": "1",
+          "count": "1"
+        },
+        {
+          "probability": "10",
+          "itemId": "2",
+          "count": "1"
+        },
+        {
+          "probability": "10",
+          "itemId": "100",
+          "count": "1"
+        },
+        {
+          "probability": "10",
+          "itemId": "101",
+          "count": "1"
+        },
+        {
+          "probability": "10",
+          "itemId": "200",
+          "count": "5"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "빨간놈대장",
+      "prefab": "Creature/BossMonster",
+      "stat": {
+        "level": "1",
+        "maxHp": "500",
+        "attack": "45",
+        "speed": "5.0",
+        "totalExp": "100"
       },
       "rewards": [
         {

@@ -42,7 +42,7 @@ public class PlayerController : CreatureController
 
         if (!_animator || !_sprite)
         {
-            Debug.LogWarning("초기화 순서 주의");
+            //Debug.LogWarning("초기화 순서 주의");
             return;
         }
 

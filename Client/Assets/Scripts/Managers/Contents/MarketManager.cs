@@ -9,7 +9,7 @@ public class MarketManager
     public List<MarketItem> MarketItems {get; private set;} = new List<MarketItem>();
     private Action callback;
 
-    public void ApiSyncCallback(Action ac)
+    public void APISyncCallback(Action ac)
     {
         callback = null;
         callback = ac;
@@ -23,6 +23,7 @@ public class MarketManager
         {
             foreach (MarketItem item in marketItems)
             {
+
                 MarketItems.Add(new MarketItem()
                 {
                     SellerName = item.SellerName,

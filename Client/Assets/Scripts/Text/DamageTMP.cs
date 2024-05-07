@@ -15,9 +15,18 @@ public class DamageTMP : MonoBehaviour
         originColor = damageText.color;
     }
 
-    public void Spawn(int damage)
+    public void SpawnDamage(int damage)
     {
         damageText.text = "-"+damage.ToString();
+        originColor = damageText.color;
+
+        StopCoroutine(co_TextAnim());
+        StartCoroutine(co_TextAnim());
+    }
+    public void SpawnMiss()
+    {
+        fadeDuration *= 1.5f;
+        damageText.text = "Miss";
         originColor = damageText.color;
 
         StopCoroutine(co_TextAnim());

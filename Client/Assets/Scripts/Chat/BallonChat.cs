@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class BallonChat : MonoBehaviour
 {
     [SerializeField]GameObject bg;
-    [SerializeField]TextMeshPro text;
+    [SerializeField]Text text;
 
     Queue<string> sentences = new Queue<string>();
     public int chatId {get; private set;}

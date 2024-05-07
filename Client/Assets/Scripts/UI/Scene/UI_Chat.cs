@@ -34,6 +34,11 @@ public class UI_Chat : UI_Scene
 
         Get<Button>((int)Buttons.SendButton).gameObject.BindEvent(OnClickSendButton);
         inputField = Get<InputField>((int)Inputs.InputField);
+        inputField.gameObject.BindEvent((p) =>
+        {
+            Managers.Object.MyPlayer.PlayerInputState = MyPlayerController.PlayerInputStates.ChatState;
+            Debug.Log("Chat Mode");
+        });
         inputField.text = "";
         inputField.characterLimit = 50;  // 입력 필드의 최대 글자 수를 50으로 설정
 

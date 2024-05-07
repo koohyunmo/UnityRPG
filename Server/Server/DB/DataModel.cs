@@ -30,6 +30,7 @@ namespace Server.DB
         public int MaxHp { get; set; }
         public int Attack { get; set; }
         public float Speed { get; set; }
+        public int CurrentExp { get; set; }
         public int TotalExp { get; set; }
         public int Gold { get; set; }
     }

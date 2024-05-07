@@ -123,7 +123,7 @@ namespace Server.Game
             int y = MaxY - cellPos.y;
 
             // 확인: _collision 배열의 범위를 벗어나는 인덱스 접근이 없는지 체크
-            return _collision[y, x] == 2;
+            return _collision[y, x] == 2 || _collision[y, x] == 3 || _collision[y, x] == 4;
         }
 
         public Int16 GetTileInfo(Vector2Int cellPos)
@@ -291,6 +291,8 @@ namespace Server.Game
                         case '0': _collision[y, x] = 0; break;
                         case '1': _collision[y, x] = 1; break;
                         case '2': _collision[y, x] = 2;  break;
+                        case '3': _collision[y, x] = 3; break;
+                        case '4': _collision[y, x] = 4; break;
                         default:
                             _collision[y, x] = 1; break;
                     }

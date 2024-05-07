@@ -116,6 +116,14 @@ public class MapEditor
                             {
                                 if(tile.name.Equals("portal") || tile.name.Equals("sign"))
                                     writer.Write("2");
+                                else if(tile.name.Equals("P1")  || tile.name.Equals("p1") )
+                                {
+                                    writer.Write("3");
+                                }
+                                else if(tile.name.Equals("P2") || tile.name.Equals("p2"))
+                                {
+                                    writer.Write("4");
+                                }
                                 else
                                     writer.Write("1");
                             }   

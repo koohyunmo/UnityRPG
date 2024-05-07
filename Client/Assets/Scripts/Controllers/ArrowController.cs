@@ -33,4 +33,18 @@ public class ArrowController : BaseController
     {
 
     }
+
+    private void OnTriggerExit2D(Collider2D other) 
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Unit"))
+        {
+            GameObject tmp = Managers.Resource.Instantiate("Text/DamageTMP");
+            if (tmp != null)
+            {
+                tmp.transform.position = other.transform.position;
+                var dmageTmp = tmp.GetComponent<DamageTMP>();
+                dmageTmp.SpawnMiss();
+            }
+        }
+    }
 }

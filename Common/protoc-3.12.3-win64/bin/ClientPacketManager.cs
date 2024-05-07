@@ -76,7 +76,15 @@ class PacketManager
 		_onRecv.Add((ushort)MsgId.SChatDespawn, MakePacket<S_ChatDespawn>);
 		_handler.Add((ushort)MsgId.SChatDespawn, PacketHandler.S_ChatDespawnHandler);		
 		_onRecv.Add((ushort)MsgId.SSpawnDamage, MakePacket<S_SpawnDamage>);
-		_handler.Add((ushort)MsgId.SSpawnDamage, PacketHandler.S_SpawnDamageHandler);
+		_handler.Add((ushort)MsgId.SSpawnDamage, PacketHandler.S_SpawnDamageHandler);		
+		_onRecv.Add((ushort)MsgId.SGoldChange, MakePacket<S_GoldChange>);
+		_handler.Add((ushort)MsgId.SGoldChange, PacketHandler.S_GoldChangeHandler);		
+		_onRecv.Add((ushort)MsgId.SExpChange, MakePacket<S_ExpChange>);
+		_handler.Add((ushort)MsgId.SExpChange, PacketHandler.S_ExpChangeHandler);		
+		_onRecv.Add((ushort)MsgId.SExitGame, MakePacket<S_ExitGame>);
+		_handler.Add((ushort)MsgId.SExitGame, PacketHandler.S_ExitGameHandler);		
+		_onRecv.Add((ushort)MsgId.SMarketItemDelete, MakePacket<S_MarketItemDelete>);
+		_handler.Add((ushort)MsgId.SMarketItemDelete, PacketHandler.S_MarketItemDeleteHandler);
 	}
 
 	public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
