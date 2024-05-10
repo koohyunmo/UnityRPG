@@ -75,6 +75,7 @@ namespace MarketServer.Controllers
                     ItemDbId = req.ItemDbId,
                     Price = req.Price,
                     SellerId = req.SellerId,
+                    SellerObjId = req.SellerObjId,
                     TemplateId = req.TemplateId,
                     SellerName = seller.PlayerName,
                     ItemName = req.ItemName,
@@ -200,6 +201,7 @@ namespace MarketServer.Controllers
                     transaction1.Commit();
                     transaction2.Commit();
                     res.ItemPurchaseOk = true;
+                    res.SellerObjId = marketItem.SellerObjId;
                     Console.WriteLine($" {seller.PlayerName} => {marketItem.TemplateId} => {buyer.PlayerName}");
                 }
             }

@@ -58,6 +58,7 @@ namespace Server.DB
 
     public class ResisterItemPacketReq
     {
+        public int SellerObjId;
         public int ItemDbId;
         public int TemplateId;
         public int SellerId;
@@ -85,6 +86,7 @@ namespace Server.DB
     }
     public class PurchaseItemPacketReq
     {
+        public int BuyerObjId;
         public int ItemDbId;
         public int TemplateId;
         public int BuyerId;
@@ -95,6 +97,7 @@ namespace Server.DB
     public class PurchaseItemPacketRes
     {
         public bool ItemPurchaseOk;
+        public int SellerObjId;
     }
 
     public class DeleteItemPacketReq

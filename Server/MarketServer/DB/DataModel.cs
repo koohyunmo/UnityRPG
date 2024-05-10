@@ -24,6 +24,7 @@ namespace MarketServer.DB
 
         [Required]
         public int SellerId { get; set; } // 판매자의 PlayerDb ID
+        public int SellerObjId { get; set; } // 판매자 알림용
 
         public string SellerName { get; set; }
 

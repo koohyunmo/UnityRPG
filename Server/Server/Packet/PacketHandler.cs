@@ -189,7 +189,8 @@ class PacketHandler
 
         S_MarketItemResister resisterResPacket = new S_MarketItemResister();
         ResisterItemPacketReq req = new ResisterItemPacketReq();
-
+        // 플레이어 OBJ 추가 알림용
+        req.SellerObjId = player.Id;
         req.ItemDbId = resisterReqPacket.ItemDbId;
         req.TemplateId = resisterReqPacket.TemplateId;
         req.SellerId = player.PlayerDbId;
@@ -227,6 +228,7 @@ class PacketHandler
 
         S_MarketItemPurchase purchaseResPacket = new S_MarketItemPurchase();
         PurchaseItemPacketReq req = new PurchaseItemPacketReq();
+        req.BuyerObjId = player.PlayerDbId;
         req.ItemDbId = purchasePacket.ItemDbId;
         req.BuyerId = player.PlayerDbId;
         req.SellerId = purchasePacket.SellerId;
@@ -239,24 +241,31 @@ class PacketHandler
             {
                 purchaseResPacket.ItemPurchaseOk = res.ItemPurchaseOk;
 
-
+                // 5-11 고침
                 using (AppDbContext db = new AppDbContext())
                 {
                     PlayerDb buyerDb = db.Players.AsNoTracking().Where(p => p.PlayerDbId == purchasePacket.BuyerId).FirstOrDefault();
+                    ObjectManager.Instance.Find(buyerDb.PlayerDbId);
                     if (buyerDb != null)
                     {
-                        S_GoldChange gold = new S_GoldChange();
-                        gold.Gold = buyerDb.Gold;
-                        room.Push(room.Unicast, player, gold);
+                        S_GoldChange goldChangePacket = new S_GoldChange();
+                        goldChangePacket.Gold = buyerDb.Gold;
+                        player.Session.Send(goldChangePacket);
                     }
 
-                    PlayerDb seller = db.Players.AsNoTracking().Where(p => p.PlayerDbId == purchasePacket.SellerId).FirstOrDefault();
-                    if (seller != null)
+                    var sellerPlayer = ObjectManager.Instance.Find(res.SellerObjId);
+                    if(sellerPlayer != null)
                     {
-                        S_GoldChange gold = new S_GoldChange();
-                        gold.Gold = seller.Gold;
-                        room.Push(room.Unicast, player, gold);
+                        PlayerDb seller = db.Players.AsNoTracking().Where(p => p.PlayerDbId == purchasePacket.SellerId).FirstOrDefault();
+                        if (seller != null)
+                        {
+                            S_GoldChange goldChangePacket = new S_GoldChange();
+                            goldChangePacket.Gold = seller.Gold;
+                            sellerPlayer.Session.Send(goldChangePacket);
+                        }
                     }
+
+
                 }
             }
             else

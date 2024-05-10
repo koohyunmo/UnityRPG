@@ -52,7 +52,7 @@ public class UI_Inventory_Item : UI_Base
         {
             ItemDbId = this.ItemDbId,
             TemplateId = this.TemplateId,
-            Price = 0,
+            Price = 100,
             SellerId = Managers.Network.PlayerDbId,
             ItemName = this.ItemName,
         };

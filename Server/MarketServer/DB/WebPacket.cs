@@ -3,6 +3,7 @@ using System;
 
 public class ResisterItemPacketReq
 {
+    public int SellerObjId { get; set; }
     public int ItemDbId { get; set; }
     public int TemplateId { get; set; }
     public int SellerId { get; set; }
@@ -30,6 +31,7 @@ public class MarketItemsGetSearchListReq
 
 public class PurchaseItemPacketReq
 {
+    public int BuyerObjId { get; set; }
     public int ItemDbId { get; set; }
     public int BuyerId { get; set; }
     public int SellerId { get; set; }
@@ -39,6 +41,7 @@ public class PurchaseItemPacketReq
 public class PurchaseItemPacketRes
 {
    public bool ItemPurchaseOk { get; set;}
+    public int SellerObjId { get; set; }
 }
 
 public struct MarketItem
