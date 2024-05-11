@@ -9,7 +9,15 @@ public class InventoryManager
 
     public void Add(Item item)
     {
-        Items.Add(item.ItemDbId, item);
+        if(item.ItemType == Google.Protobuf.Protocol.ItemType.Consumable && Items.ContainsKey(item.ItemDbId) == true)
+        {
+            Items[item.ItemDbId].Count += item.Count;
+        }
+        else
+        {
+            Items.Add(item.ItemDbId, item);
+        }
+
     }
     public Item Get(int itemDbId)
     {

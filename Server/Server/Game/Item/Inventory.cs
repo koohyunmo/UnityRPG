@@ -13,6 +13,10 @@ namespace Server.Game
         {
             Items.Add(item.ItemDbId, item);
         }
+        public void Add(int itemDbId,int count)
+        {
+            Items[itemDbId].Count += count;
+        }
         public Item Get(int itemDbId)
         {
             Item item = null;
@@ -35,7 +39,6 @@ namespace Server.Game
 
         public int? GetEmptySlot()
         {
-
             for(int slot =0; slot <20; slot++)
             {
                 Item item = Items.Values.FirstOrDefault(i => i.Slot == slot);

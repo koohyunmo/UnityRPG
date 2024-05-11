@@ -16,6 +16,7 @@ public class UI_Inventory : UI_Base
             GameObject go = Managers.Resource.Instantiate("UI/Scene/UI_Inventory_Item", grid.transform);
             UI_Inventory_Item item = go.GetOrAddComponent<UI_Inventory_Item>();
             Items.Add(item);
+            item.Slot = i;
         }
 
         RefreshUI();
@@ -34,7 +35,7 @@ public class UI_Inventory : UI_Base
             if (item.Slot < 0 || item.Slot >= 20)
                 continue;
 
-            Items[item.Slot].SetItem(item);
+            Items[item.Slot].SetItem(item, this);
         }
     }
 
@@ -47,6 +48,7 @@ public class UI_Inventory : UI_Base
         {
             GameObject go = Managers.Resource.Instantiate("UI/Scene/UI_Inventory_Item", grid.transform);
             UI_Inventory_Item item = go.GetOrAddComponent<UI_Inventory_Item>();
+            item.Slot = i;
             Items.Add(item);
         }
 

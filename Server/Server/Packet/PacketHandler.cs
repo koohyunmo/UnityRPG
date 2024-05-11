@@ -245,7 +245,6 @@ class PacketHandler
                 using (AppDbContext db = new AppDbContext())
                 {
                     PlayerDb buyerDb = db.Players.AsNoTracking().Where(p => p.PlayerDbId == purchasePacket.BuyerId).FirstOrDefault();
-                    ObjectManager.Instance.Find(buyerDb.PlayerDbId);
                     if (buyerDb != null)
                     {
                         S_GoldChange goldChangePacket = new S_GoldChange();
@@ -264,13 +263,11 @@ class PacketHandler
                             sellerPlayer.Session.Send(goldChangePacket);
                         }
                     }
-
-
                 }
             }
             else
             {
-                purchaseResPacket.ItemPurchaseOk = res.ItemPurchaseOk;
+                purchaseResPacket.ItemPurchaseOk = false;
             }
 
             room.Push(room.Unicast, player, purchaseResPacket);
@@ -304,7 +301,7 @@ class PacketHandler
             }
             else
             {
-                s_MarketItemDelete.DeleteOk = res.DeleteOk;
+                s_MarketItemDelete.DeleteOk = false;
             }
 
             room.Push(room.Unicast, player, s_MarketItemDelete);
@@ -389,7 +386,7 @@ class PacketHandler
             });
         }catch (Exception ex) 
         {
-            await Console.Out.WriteLineAsync($"API 호출 문제 {ex}");
+            await Console.Out.WriteLineAsync($"market/search API 호출 문제 {ex}");
         }
 
     }
@@ -451,5 +448,35 @@ class PacketHandler
         clientSession.Disconnect();
     }
 
+    public static void C_ItemSlotChangeHandler(PacketSession session, IMessage message)
+    {
+        C_ItemSlotChange changeItemPacket = (C_ItemSlotChange)message;
+        ClientSession clientSession = (ClientSession)session;
 
+        Player player = clientSession.MyPlayer;
+        if (player == null)
+            return;
+        GameRoom room = player.Room;
+        if (room == null)
+            return;
+
+        room.Push(room.HandleChangeItem, player, changeItemPacket);
+        
+    }
+
+    public static void C_ItemDeleteHandler(PacketSession session, IMessage message)
+    {
+        C_ItemDelete itemDeletePacket = (C_ItemDelete)message;
+        ClientSession clientSession = (ClientSession)session;
+
+        Player player = clientSession.MyPlayer;
+        if (player == null)
+            return;
+        GameRoom room = player.Room;
+        if (room == null)
+            return;
+
+        room.Push(room.HandleDeleteItem, player, itemDeletePacket);
+
+    }
 }

@@ -472,5 +472,8 @@ public class PacketHandler
 		}
     }
 
-
+    public static void S_ItemSlotChangeHandler(PacketSession session, IMessage message)
+    {
+        Debug.Log("아이템 슬롯 체인지");
+    }
 }

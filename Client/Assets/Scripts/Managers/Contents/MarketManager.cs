@@ -7,12 +7,12 @@ using UnityEngine;
 public class MarketManager 
 {
     public List<MarketItem> MarketItems {get; private set;} = new List<MarketItem>();
-    private Action callback;
+    private Action marketListUpdateCallback;
 
     public void APISyncCallback(Action ac)
     {
-        callback = null;
-        callback = ac;
+        marketListUpdateCallback = null;
+        marketListUpdateCallback = ac;
     }
 
     public void RefreshItems(List<MarketItem> marketItems)
@@ -34,6 +34,6 @@ public class MarketManager
                 });
             }
         }
-        callback?.Invoke();
+        marketListUpdateCallback?.Invoke();
     }
 }

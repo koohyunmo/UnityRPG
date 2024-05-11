@@ -56,7 +56,6 @@ public class ChatManager
         go.transform.SetParent(target.transform);
         ballonChat[senderId] = bc;
     }
-
     private void ClearPrevBallonChat(int senderId)
     {
         BallonChat bc = null;
@@ -67,6 +66,7 @@ public class ChatManager
             ballonChat.Remove(senderId);
         }
     }
+    // 채팅 디스폰 패킷을 받았을때 삭제
     public void ClearBallonChat(int senderId, int chatId)
     {
         BallonChat bc = null;

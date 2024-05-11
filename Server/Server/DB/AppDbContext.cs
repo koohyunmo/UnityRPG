@@ -41,6 +41,10 @@ namespace Server.DB
                .Entity<PlayerDb>()
                .HasIndex(p => p.PlayerName)
                .IsUnique();
+
+            modelBuilder
+                .Entity<ItemDb>()
+                .HasIndex(i => i.TemplateId);
         }
     }
 }

@@ -124,6 +124,7 @@ namespace Server.Data
         public int probability; // 100분율
         public int itemId;
         public int count;
+        public ItemType itemType;
     }
     [Serializable]
     public class MonsterData

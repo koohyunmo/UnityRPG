@@ -77,6 +77,14 @@ public abstract class UI_Base : MonoBehaviour
 				evt.OnDragHandler -= action;
 				evt.OnDragHandler += action;
 				break;
+			case Define.UIEvent.DoubleClick:  // 더블 클릭 케이스 추가
+				evt.OnDoubleClickHandler -= action;
+				evt.OnDoubleClickHandler += action;
+				break;
+			case Define.UIEvent.PointUp:
+				evt.OnPointerUpHandler -= action;
+				evt.OnPointerUpHandler += action;
+				break;
 		}
 	}
 }

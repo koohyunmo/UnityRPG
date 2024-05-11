@@ -11,6 +11,7 @@ public class UI_GameScene : UI_Scene
     public UI_Chat Chat { get => _chat; private set => _chat = value; }
     public UI_HUD HUD { get => _hud; private set => _hud = value; }
     public UI_UserInfo UserInfo { get => _userInfo; private set => _userInfo = value; }
+    public UI_QuickSlot QuickSlot { get => _quickSlot; private set => _quickSlot = value; }
 
     [SerializeField]private UI_Inventory _inven;
     [SerializeField]private UI_Stat _stat;
@@ -19,6 +20,8 @@ public class UI_GameScene : UI_Scene
     [SerializeField] private UI_Chat _chat;
     [SerializeField] private UI_HUD _hud;
     [SerializeField] private UI_UserInfo _userInfo;
+
+    [SerializeField] private UI_QuickSlot _quickSlot;
 
     public override void Init()
     {
@@ -35,6 +38,7 @@ public class UI_GameScene : UI_Scene
         Chat = Managers.UI.ShowSceneUI<UI_Chat>();
         HUD = Managers.UI.ShowSceneUI<UI_HUD>();
         UserInfo = Managers.UI.ShowSceneUI<UI_UserInfo>();
+        QuickSlot = Managers.UI.ShowSceneUI<UI_QuickSlot>();
 
     }
 }

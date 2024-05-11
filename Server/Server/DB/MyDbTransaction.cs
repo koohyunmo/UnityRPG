@@ -110,13 +110,15 @@ namespace Server.DB
                 return;
             }
 
+            //Console.WriteLine(rewardData.type);
 
             ItemDb itemDb = new ItemDb()
             {
                 TemplateId = rewardData.itemId,
                 Count = rewardData.count,
                 Slot = slot.Value,
-                OnwerDbId = player.PlayerDbId
+                OnwerDbId = player.PlayerDbId,
+                ItemType = rewardData.itemType,
             };
 
             // You
@@ -124,7 +126,17 @@ namespace Server.DB
             {
                 using (AppDbContext db = new AppDbContext())
                 {
-                    db.Items.Add(itemDb);
+                    // 스택가능한 아이템인경우
+                    var stackableItem = db.Items
+                                    .Where(i => i.OnwerDbId == player.PlayerDbId && 
+                                                i.TemplateId == itemDb.TemplateId && 
+                                                i.ItemType == Google.Protobuf.Protocol.ItemType.Consumable)
+                                    .FirstOrDefault();
+
+                    if (stackableItem == null)
+                        db.Items.Add(itemDb);
+                    else
+                        stackableItem.Count += itemDb.Count;
 
                     bool success = db.SaveChangesEx();
                     if (success)
@@ -133,7 +145,10 @@ namespace Server.DB
                         room.Push(() =>
                         {
                             Item newItem = Item.MakeItem(itemDb);
-                            player.Inven.Add(newItem);
+                            if (stackableItem == null)
+                                player.Inven.Add(newItem);
+                            else
+                                player.Inven.Add(stackableItem.ItemDbId, itemDb.Count);
 
                             // Client Noti
                             {

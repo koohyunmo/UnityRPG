@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Google.Protobuf.Protocol;
+using Server.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,6 +26,7 @@ namespace Server.DB
 
         public ICollection<ItemDb> Items { get; set; } // 1 : 다 
         public ICollection<MailDb> Mails { get; set; }
+        public ICollection<QuickSlotDb> QuickSlots { get; set;}
 
         public int Level { get; set; }
         public int Hp { get; set; }
@@ -40,6 +43,7 @@ namespace Server.DB
     {
         public int ItemDbId { get; set; }
         public int TemplateId { get; set; }
+        public ItemType ItemType { get; set; }
         public int Count { get; set; }
         public int Slot { get; set; }
         public bool Equipped { get; set; } = false;
@@ -66,4 +70,26 @@ namespace Server.DB
         public PlayerDb Owner { get; set; }
     }
 
+    [Table("QuickSlot")]
+    public class QuickSlotDb
+    {
+        [Key]
+        public int QuickSlotDbId { get; set; }
+
+        [ForeignKey("Player")]
+        public int PlayerDbId { get; set; }
+        public PlayerDb Player { get; set; }
+
+        public int SlotNumber { get; set; }
+
+        // 아이템을 참조하는 외부 키
+        [ForeignKey("Item")]
+        public int? ItemDbId { get; set; }
+        public ItemDb Item { get; set; }
+
+        // 스킬을 참조하는 외부 키 TODO
+        //[ForeignKey("Skill")]
+        //public int? SkillId { get; set; }
+
+    }
 }

@@ -54,6 +54,9 @@ enum MsgId {
   S_EXIT_GAME = 46;
   S_MARKET_ITEM_DELETE = 47;
   C_MARKET_ITEM_DELETE = 48;
+  S_ITEM_SLOT_CHANGE = 49;
+  C_ITEM_SLOT_CHANGE = 50;
+  C_ITEM_DELETE = 51;
 }
 
 enum CreatureState {
@@ -342,6 +345,24 @@ message C_ExitGame
 message S_ExitGame
 {
 	bool exit = 1;
+}
+
+message C_ItemSlotChange
+{
+	int32 selectedItemDbId = 1;
+	int32 selectedSlot = 2;
+	int32 targetItemDbId = 3;
+	int32 targetSlot = 4;
+}
+
+message S_ItemSlotChange
+{
+	bool changeOk =1;
+}
+
+message C_ItemDelete
+{
+	int32 itemDbId =1;
 }
 
 message ChatInfo

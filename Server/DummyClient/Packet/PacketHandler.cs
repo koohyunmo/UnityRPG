@@ -203,4 +203,9 @@ public class PacketHandler
     internal static void S_MarketItemDeleteHandler(PacketSession session, IMessage message)
     {
     }
+
+    internal static void S_ItemSlotChangeHandler(PacketSession session, IMessage message)
+    {
+        throw new NotImplementedException();
+    }
 }

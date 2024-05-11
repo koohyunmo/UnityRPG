@@ -51,7 +51,6 @@ namespace Server.Game
                 return;
 
 
-
             // 아이템 목록을 갖고 온다.
             using (AppDbContext db = new AppDbContext())
             {
@@ -88,18 +87,6 @@ namespace Server.Game
             chat.Room = this;
             chat.Start(packet);
             room._chat.Add(packet.SenderId,chat);
-
-            // 스폰패킷
-            {
-                //room.Push(BroadcastVisionCube, player.CellPos, packet);
-            }
-            // 디스폰패킷
-            {
-                //S_ChatDespawn s_ChatDespawn = new S_ChatDespawn();
-                //s_ChatDespawn.SenderId = packet.SenderId;
-                //s_ChatDespawn.ChatId = packet.ChatId;
-                //room.PushAfter(5000, room.HandleDespawnChat, player, room, s_ChatDespawn);
-            }
         }
 
         public void HandleDespawnChat(Player player, GameRoom room, S_ChatDespawn packet)

@@ -46,6 +46,19 @@ public class Item
         ItemType = itemType;
     }
 
+    public Item(Item newItem)
+    {
+        if(newItem == null) return;
+        ItemType = newItem.ItemType;
+        ItemDbId = newItem.ItemDbId;
+        TemplateId = newItem.TemplateId;
+        Slot = newItem.Slot;
+        Equipped = newItem.Equipped;
+        Count = newItem.Count;
+        Info = new ItemInfo();
+        Info.MergeFrom(newItem.Info);
+    }
+
     public static Item MakeItem(ItemInfo itemInfo)
     {
         Item item = null;
