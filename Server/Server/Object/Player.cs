@@ -17,6 +17,7 @@ namespace Server.Object
         public ClientSession Session { get; set; }
         public VisionCube Vision { get; private set; }
         public Inventory Inven { get; private set; } = new Inventory();
+        public int Gold { get; set; }
 
         public int WeaponDamage { get; private set; }
         public int ArmorDefence { get; private set; }

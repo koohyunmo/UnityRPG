@@ -1,17 +1,31 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Google.Protobuf.Protocol;
 using UnityEngine;
 
 public class InventoryManager
 {
     public Dictionary<int, Item> Items {get;} = new Dictionary<int, Item>();
 
+    public void Change(int dbId , ItemInfo itemInfo)
+    {
+        if(Items.ContainsKey(dbId) == false) return;
+        if(itemInfo.Count <= 0)
+        {
+            Items[dbId] = null;
+            return;
+        }
+
+        Items[dbId].Info.MergeFrom(itemInfo);
+
+    }
+
     public void Add(Item item)
     {
         if(item.ItemType == Google.Protobuf.Protocol.ItemType.Consumable && Items.ContainsKey(item.ItemDbId) == true)
         {
-            Items[item.ItemDbId].Count += item.Count;
+            Items[item.ItemDbId] = item;
         }
         else
         {

@@ -27,7 +27,7 @@ public class UI_SelectItemOptionPopup : UI_Popup
     public GameObject popup;
     Item _itemData;
 
-    private Action<PointerEventData> _equipEvt = null;
+    private Action<PointerEventData> _equipOrUseEvt = null;
 
     private Action<PointerEventData> _sellEvt = null;
 
@@ -37,8 +37,8 @@ public class UI_SelectItemOptionPopup : UI_Popup
     {
         _itemData = new Item(itemData);
 
-        _equipEvt = null;
-        _equipEvt = equipOrUseCallback;
+        _equipOrUseEvt = null;
+        _equipOrUseEvt = equipOrUseCallback;
 
         _sellEvt = null;
         _sellEvt = sellCallback;
@@ -46,18 +46,18 @@ public class UI_SelectItemOptionPopup : UI_Popup
         _dropEvt = null;
         _dropEvt = dropCallback;
 
-        Get<Button>((int)Buttons.EquipButton).gameObject.BindEvent(p => {_equipEvt?.Invoke(p); Managers.UI.ClosePopupUI();});
+        Get<Button>((int)Buttons.EquipButton).gameObject.BindEvent(p => {_equipOrUseEvt?.Invoke(p); Managers.UI.ClosePopupUI();});
         Get<Button>((int)Buttons.SellButton).gameObject.BindEvent(p => {_sellEvt?.Invoke(p); Managers.UI.ClosePopupUI();});
         Get<Button>((int)Buttons.DropButton).gameObject.BindEvent(p => {_dropEvt?.Invoke(p); Managers.UI.ClosePopupUI();});
 
         if(_itemData.ItemType != Google.Protobuf.Protocol.ItemType.Consumable)
         {
-            Get<Button>((int)Buttons.EquipButton).gameObject.BindEvent(p => { _equipEvt?.Invoke(p); Managers.UI.ClosePopupUI(); });
+            Get<Button>((int)Buttons.EquipButton).gameObject.BindEvent(p => { _equipOrUseEvt?.Invoke(p); Managers.UI.ClosePopupUI(); });
             Get<Text>((int)Texts.UseOrEquipText).text = "장착하기";
         }
         else
         {
-            Get<Button>((int)Buttons.EquipButton).gameObject.BindEvent(p => {Debug.Log("USE"); Managers.UI.ClosePopupUI(); });
+            Get<Button>((int)Buttons.EquipButton).gameObject.BindEvent(p => { _equipOrUseEvt?.Invoke(p); Managers.UI.ClosePopupUI(); });
             Get<Text>((int)Texts.UseOrEquipText).text = "사용하기";
         }
     }

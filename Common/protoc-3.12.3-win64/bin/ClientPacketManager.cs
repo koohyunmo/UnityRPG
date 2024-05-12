@@ -86,7 +86,9 @@ class PacketManager
 		_onRecv.Add((ushort)MsgId.SMarketItemDelete, MakePacket<S_MarketItemDelete>);
 		_handler.Add((ushort)MsgId.SMarketItemDelete, PacketHandler.S_MarketItemDeleteHandler);		
 		_onRecv.Add((ushort)MsgId.SItemSlotChange, MakePacket<S_ItemSlotChange>);
-		_handler.Add((ushort)MsgId.SItemSlotChange, PacketHandler.S_ItemSlotChangeHandler);
+		_handler.Add((ushort)MsgId.SItemSlotChange, PacketHandler.S_ItemSlotChangeHandler);		
+		_onRecv.Add((ushort)MsgId.SItemRefresh, MakePacket<S_ItemRefresh>);
+		_handler.Add((ushort)MsgId.SItemRefresh, PacketHandler.S_ItemRefreshHandler);
 	}
 
 	public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)

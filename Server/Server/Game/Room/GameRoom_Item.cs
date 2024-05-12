@@ -8,6 +8,7 @@ using Server.Object;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -42,7 +43,7 @@ namespace Server.Game
             MyDbTransaction.SyncAndSendPlayerInventory(player);
         }
 
-        public void HandleChangeItem(Player player, C_ItemSlotChange packet)
+        public void HandleItemSlotChange(Player player, C_ItemSlotChange packet)
         {
             if (player == null) return;
 
@@ -141,6 +142,67 @@ namespace Server.Game
                 // Handle failure
             }
         }
+
+        public void HandleUseItem(Player player, C_ItemUse packet)
+        {
+            if (player == null || packet == null || player.Room == null)
+                return;
+
+            player.Heal(50);
+            player.Room.Push(HandleUseItemStep_2, player, packet);
+        }
+        // DB 병목이있음
+        // 메모리에서만 처리하고 DB 접근은 안하도록 바꿔야함
+        public void HandleUseItemStep_2(Player player, C_ItemUse packet)
+        {
+            if (player == null || packet == null || player.Room == null)
+                return;
+
+            using (AppDbContext db = new AppDbContext())
+            {
+                var itemDb = db.Items.Where(i => i.OnwerDbId == player.PlayerDbId && i.ItemDbId == packet.ItemDbId).FirstOrDefault();
+                if (itemDb == null)
+                    return;
+
+                itemDb.Count -= 1;
+                if(itemDb.Count <= 0 )
+                {
+                    db.Items.Remove(itemDb);
+                }
+                bool success = db.SaveChangesEx();
+                if (success)
+                {
+                    S_ItemRefresh s_ItemRefresh = new S_ItemRefresh() { ItemInfo = new ItemInfo()};
+                    s_ItemRefresh.ItemInfo.MergeFrom(Item.MakeItem(itemDb).Info);
+                    player.Session.Send(s_ItemRefresh);
+
+                    Console.WriteLine($"Player_{player.Id} Use : {itemDb.ItemDbId} | remain : {itemDb.Count}");
+                }
+            }
+
+            player.Room.Push(HandleUseItemStep_3, player, packet);
+        }
+
+        public void HandleUseItemStep_3(Player player, C_ItemUse packet)
+        {
+            if (player == null || packet == null || player.Room == null)
+                return;
+
+            using (AppDbContext db = new AppDbContext())
+            {
+                var playerDb = db.Players.Where(p => p.PlayerDbId == player.PlayerDbId).FirstOrDefault();
+                if (playerDb == null)
+                    return;
+
+                playerDb.Hp = player.Stat.Hp;
+                bool success = db.SaveChangesEx();
+                if (success)
+                {
+                    Console.WriteLine($"Player_{player.Id} : {player.Hp}");
+                }
+            }
+        }
+
 
     }
 }

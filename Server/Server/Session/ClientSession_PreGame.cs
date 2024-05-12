@@ -174,6 +174,7 @@ namespace Server
                 MyPlayer.Info.PosInfo.PosY = 0;
                 MyPlayer.Stat.MergeFrom(playerInfo.StatInfo);
                 MyPlayer.Session = this;
+                MyPlayer.Gold = playerInfo.Gold;
 
                 S_ItemList itemListPacket = new S_ItemList();
 

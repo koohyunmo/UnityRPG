@@ -57,6 +57,8 @@ enum MsgId {
   S_ITEM_SLOT_CHANGE = 49;
   C_ITEM_SLOT_CHANGE = 50;
   C_ITEM_DELETE = 51;
+  C_ITEM_USE = 52;
+  S_ITEM_REFRESH = 53;
 }
 
 enum CreatureState {
@@ -365,6 +367,15 @@ message C_ItemDelete
 	int32 itemDbId =1;
 }
 
+message C_ItemUse
+{
+	int32 itemDbId = 1;
+	ItemType itemType = 2;
+}
+message S_ItemRefresh
+{
+	ItemInfo itemInfo =1;
+}
 message ChatInfo
 {
 	string chat =1;

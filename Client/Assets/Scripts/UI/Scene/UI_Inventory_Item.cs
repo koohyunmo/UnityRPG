@@ -26,7 +26,7 @@ public class UI_Inventory_Item : UI_Base, ISlot
 
     public override void Init()
     {
-        _icon.gameObject.BindEvent(EquipItem, Define.UIEvent.DoubleClick);
+        _icon.gameObject.BindEvent(EquipOrUse, Define.UIEvent.DoubleClick);
         _icon.gameObject.BindEvent(ItemDrag, Define.UIEvent.Drag);
         _icon.gameObject.BindEvent(ItemPointUp, Define.UIEvent.PointUp);
         _icon.gameObject.BindEvent(ShowItemOptionPopup, type: Define.UIEvent.Click, isLeftClick: false);
@@ -53,21 +53,39 @@ public class UI_Inventory_Item : UI_Base, ISlot
 
         if (isDrag)
         {
-            UI_Inventory_Item swapTaget = FindSlotItem();
+            ISlot swapTaget = FindSlotItem();
 
-            if (swapTaget)
+            if(swapTaget == null) 
             {
-                Swap(swapTaget, this);
+                _icon.gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+                return;
+            }
+
+
+            if (swapTaget.SlotType == SlotType.InventoryItem)
+            {
+                UI_Inventory_Item invenItem = swapTaget as UI_Inventory_Item;
+                Swap(invenItem, this);
+            }
+            else if(swapTaget.SlotType == SlotType.QuickSlotItem)
+            {
+                _icon.gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+                if (ItemData.ItemType != ItemType.Consumable) return;
+
+                UI_QuickSlotItem quickSlotItem = swapTaget as UI_QuickSlotItem;
+                Swap(quickSlotItem);
+
             }
             else
             {
                 _icon.gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
             }
+
             isDrag = false;
         }
     }
 
-    public void EquipItem(PointerEventData data)
+    public void EquipOrUse(PointerEventData data)
     {
         if (isDrag) return;
 
@@ -78,16 +96,21 @@ public class UI_Inventory_Item : UI_Base, ISlot
 
         // TODO USE Item
         if (itemData.itemType == ItemType.Consumable)
-        { return; }
+        {
+            Debug.Log("아이템 사용");
+        }
+        else
+        {
+            C_EquipItem equipPacket = new C_EquipItem();
+            equipPacket.ItemDbId = ItemDbId;
+            equipPacket.Equipped = !ItemData.Equipped;
 
-        // TODO 슬롯바뀐걸 서버 적용해줘야함 지금은 로컬에서만 슬롯이 변경됨
-        C_EquipItem equipPacket = new C_EquipItem();
-        equipPacket.ItemDbId = ItemDbId;
-        equipPacket.Equipped = !ItemData.Equipped;
+            //Debug.Log("아이템 장착");
 
-        Debug.Log("아이템 장착");
+            Managers.Network.Send(equipPacket);
+        }
 
-        Managers.Network.Send(equipPacket);
+
     }
 
     public void ShowItemOptionPopup(PointerEventData data)
@@ -98,7 +121,7 @@ public class UI_Inventory_Item : UI_Base, ISlot
         var itemPopup = Managers.UI.ShowPopupUI<UI_SelectItemOptionPopup>();
         Vector3 offset = new Vector3(100f, -50f, 0); // X 축으로 -100, Y 축으로 -50 이동
         itemPopup.popup.transform.position = new Vector3(data.position.x, data.position.y, 0) + offset;
-        itemPopup.SetItemData(ItemData, EquipItem, Resister, Drop);
+        itemPopup.SetItemData(ItemData, EquipOrUse, Resister, Drop);
     }
 
     private void Resister(PointerEventData data)
@@ -187,20 +210,30 @@ public class UI_Inventory_Item : UI_Base, ISlot
         Debug.Log("아이템 스왑");
     }
 
-    private UI_Inventory_Item FindSlotItem()
+
+    public void Swap(UI_QuickSlotItem swapItem)
+    {
+        //Debug.Log("퀵슬롯에 등록");
+        swapItem.SetIcon(_icon.sprite,ItemData);
+        Managers.QuickSlot.Add(swapItem.QuickSlotKeyCode, ItemDbId);
+    }
+
+    private ISlot FindSlotItem()
     {
         if (_inventory == null) return null;
 
-        UI_Inventory_Item result = null;
-        //IEnumerable<ISlot> itemList = _inventory.Items;
-        //UI_GameScene gameScene = Managers.UI.SceneUI as UI_GameScene;
-        //gameScene.QuickSlot.QuickSlot
+        ISlot result = null;
+        IEnumerable<ISlot> itemList = _inventory.Items;
+        UI_GameScene gameScene = Managers.UI.SceneUI as UI_GameScene;
+        itemList = itemList.Concat(gameScene.QuickSlot.QuickSlotItems);
 
-        foreach (var other in _inventory.Items)
+        foreach (var other in itemList)
         {
-            if (other == this) continue;
+            if (other.GetTransform() == this) continue;
 
-            float sqrDistance = (other.transform.position - _icon.transform.position).sqrMagnitude;
+            Debug.Log(other.GetTransform().name);
+
+            float sqrDistance = (other.GetTransform().position - _icon.transform.position).sqrMagnitude;
 
             if (sqrDistance < 10f * 10f)
             {

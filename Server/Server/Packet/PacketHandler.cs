@@ -460,7 +460,7 @@ class PacketHandler
         if (room == null)
             return;
 
-        room.Push(room.HandleChangeItem, player, changeItemPacket);
+        room.Push(room.HandleItemSlotChange, player, changeItemPacket);
         
     }
 
@@ -478,5 +478,23 @@ class PacketHandler
 
         room.Push(room.HandleDeleteItem, player, itemDeletePacket);
 
+    }
+
+    public static void C_ItemUseHandler(PacketSession session, IMessage message)
+    {
+        C_ItemUse itemUsePacket = (C_ItemUse)message;
+        ClientSession clientSession = (ClientSession)session;
+
+        Player player = clientSession.MyPlayer;
+        if (player == null)
+            return;
+        GameRoom room = player.Room;
+        if (room == null)
+            return;
+
+        if (itemUsePacket.ItemType != ItemType.Consumable)
+            return;
+
+        room.Push(room.HandleUseItem, player, itemUsePacket);
     }
 }

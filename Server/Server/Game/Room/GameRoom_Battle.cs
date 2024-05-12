@@ -11,6 +11,7 @@ namespace Server.Game
 {
     public partial class GameRoom : JobSerializer
     {
+        static Dictionary<int, Dictionary<int, long>> _playerSkillCoolDowns = new Dictionary<int, Dictionary<int, long>>();
 
         public void HandleMove(Player player, C_Move movePacket)
         {
@@ -85,7 +86,7 @@ namespace Server.Game
             newRoom.Push(newRoom.EnterGame, player, true);
         }
 
-        static Dictionary<int, Dictionary<int, long>> _playerSkillCoolDowns = new Dictionary<int, Dictionary<int, long>>();
+
         public void HandleSkill(Player player, C_Skill skillPacket)
         {
             if (player == null)

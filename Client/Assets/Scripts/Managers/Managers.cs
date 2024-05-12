@@ -17,6 +17,7 @@ public class Managers : MonoBehaviour
     MailManager _mail = new MailManager();
     ChatManager _chat = new ChatManager();
     NotiManager _noti = new NotiManager();
+    QuickSlotManager _quickSlot = new QuickSlotManager();  
     public static MapManager Map {get { return Instance._map;}}
     public static ObjectManager Object { get { return Instance._obj; } }
     public static NetworkManager Network {get {return Instance._network;}}
@@ -26,6 +27,7 @@ public class Managers : MonoBehaviour
     public static MailManager Mail { get { return Instance._mail; } }
     public static ChatManager Chat { get { return Instance._chat; } }
     public static NotiManager Notify { get { return Instance._noti; } }
+    public static QuickSlotManager QuickSlot { get { return Instance._quickSlot; } }
     #endregion
 
     #region Core

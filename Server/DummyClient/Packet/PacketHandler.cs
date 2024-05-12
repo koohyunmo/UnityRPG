@@ -208,4 +208,9 @@ public class PacketHandler
     {
         throw new NotImplementedException();
     }
+
+    internal static void S_ItemRefreshHandler(PacketSession session, IMessage message)
+    {
+        throw new NotImplementedException();
+    }
 }

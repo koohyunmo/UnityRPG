@@ -13,31 +13,31 @@
       },
       "rewards": [
         {
-          "probability": "10",
+          "probability": "5",
           "itemId": "1",
           "count": "1",
           "itemType": "Weapon"
         },
         {
-          "probability": "10",
+          "probability": "5",
           "itemId": "2",
           "count": "1",
           "itemType": "Weapon"
         },
         {
-          "probability": "10",
+          "probability": "5",
           "itemId": "100",
           "count": "1",
           "itemType": "Armor"
         },
         {
-          "probability": "10",
+          "probability": "5",
           "itemId": "101",
           "count": "1",
           "itemType": "Armor"
         },
         {
-          "probability": "10",
+          "probability": "30",
           "itemId": "200",
           "count": "5",
           "itemType": "Consumable"

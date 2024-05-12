@@ -117,6 +117,15 @@ namespace Server.Object
                 return MoveDir.Down;
         }
 
+        public virtual void Heal(int healAmount)
+        {
+            this.Stat.Hp = Math.Min(this.Hp + healAmount, this.Stat.MaxHp);
+
+            S_ChangeHp changePacket = new S_ChangeHp();
+            changePacket.ObjectId = Id;
+            changePacket.Hp = Stat.Hp;
+            Room.BroadcastVisionCube(CellPos, changePacket);
+        }
 
 
         public virtual void OnDamaged(GameObject attacker,int damage)

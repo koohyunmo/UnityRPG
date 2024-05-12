@@ -52,6 +52,7 @@ namespace ServerCore
 			{
 				//TODO 로비로
 				Debug.LogError($"OnConnectCompleted Fail: {args.SocketError}");
+				Managers.Scene.LoadScene(Define.Scene.Lobby);
 			}
 		}
 	}

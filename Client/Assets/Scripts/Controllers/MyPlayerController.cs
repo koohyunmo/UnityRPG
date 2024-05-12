@@ -31,6 +31,7 @@ public class MyPlayerController : PlayerController
     protected override void UpdateController()
     {
         GetUIKeyInput();
+        GetQuickSlotInput();
         switch (State)
         {
             case CreatureState.Idle:
@@ -86,6 +87,26 @@ public class MyPlayerController : PlayerController
         }
     }
 
+    private void GetQuickSlotInput()
+    {
+        if(Input.GetKeyDown(KeyCode.F1))
+        {
+            Managers.QuickSlot.UseItem("F1");
+        }
+        else if(Input.GetKeyDown(KeyCode.F2))
+        {
+            Managers.QuickSlot.UseItem("F2");
+        }
+        else if(Input.GetKeyDown(KeyCode.F3))
+        {
+            Managers.QuickSlot.UseItem("F3");
+        }
+        else if (Input.GetKeyDown(KeyCode.F4))
+        {
+            Managers.QuickSlot.UseItem("F4");
+        }
+    }
+
     protected override void UpdateIdle()
     {
         // 이동 상태로 갈지 확인
@@ -107,28 +128,25 @@ public class MyPlayerController : PlayerController
                 C_Skill skill = new C_Skill() { Info = new SkillInfo() };
                 skill.Info.SkillId = 2;
                 Managers.Network.Send(skill);
-
                 _coSkillCoolTime = StartCoroutine(CoInputCoolTime(0.25f));
+                Managers.QuickSlot.UseSkill("SpaceBar", Managers.Data.SkillDict[2].cooldown);
             }
         }
         else if(Input.GetKey(KeyCode.Q))
         {
             if (_coSkillCoolTime == null)
             {
-                //Debug.Log("Use Arrow Skill");
-
                 C_Skill skill = new C_Skill() { Info = new SkillInfo() };
                 skill.Info.SkillId = 3;
                 Managers.Network.Send(skill);
                 _coSkillCoolTime = StartCoroutine(CoInputCoolTime(0.25f));
+                Managers.QuickSlot.UseSkill("Q",Managers.Data.SkillDict[3].cooldown);
             }
         }
         else if (Input.GetKey(KeyCode.W))
         {
             if (_coSkillCoolTime == null)
             {
-                //Debug.Log("Use Arrow Skill");
-
                 C_Skill skill = new C_Skill() { Info = new SkillInfo() };
                 skill.Info.SkillId = 4;
                 Managers.Network.Send(skill);

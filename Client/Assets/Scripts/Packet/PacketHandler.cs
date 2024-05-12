@@ -237,6 +237,8 @@ public class PacketHandler
 		{
 			Item item = Item.MakeItem(itemInfo);
 			Managers.Inven.Add(item);
+			Debug.Log($"{itemInfo.ItemDbId} | {itemInfo.Count}");
+			Managers.QuickSlot.RefreshItem(item.ItemDbId);
 		}
 
 		Debug.Log("아이템을 획득했습니다!");
@@ -474,6 +476,15 @@ public class PacketHandler
 
     public static void S_ItemSlotChangeHandler(PacketSession session, IMessage message)
     {
-        Debug.Log("아이템 슬롯 체인지");
+        Debug.Log("아이템 슬롯 체인지 알람");
     }
+
+    public static void S_ItemRefreshHandler(PacketSession session, IMessage message)
+    {
+        S_ItemRefresh item = message as S_ItemRefresh;
+		Managers.Inven.Change(item.ItemInfo.ItemDbId, item.ItemInfo);
+		Managers.QuickSlot.RefreshItem(item.ItemInfo.ItemDbId);
+		//Debug.Log($"S_ItemRefreshHandler : {item.ItemInfo.ItemDbId} | {item.ItemInfo.Count}");
+
+	}
 }

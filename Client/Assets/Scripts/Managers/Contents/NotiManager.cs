@@ -6,6 +6,14 @@ public class NotiManager
 {
     UI_HUD _hud;
     UI_UserInfo _userInfo;
+
+    public void ChangeUserInfo()
+    {
+        ChangeHp();
+        ChangeExp();
+        ChangeLevel();
+    }
+    
     public void GoldChange(int amount)
     {
         if(_hud == null)
@@ -28,12 +36,7 @@ public class NotiManager
         }
 
     }
-    public void ChangeUserInfo()
-    {
-        ChangeHp();
-        ChangeExp();
-        ChangeLevel();
-    }
+
     public void ChangeHp()
     {
         if (_userInfo == null)

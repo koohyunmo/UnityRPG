@@ -38,7 +38,13 @@ namespace Server.DB
                     db.Entry(playerDb).Property(nameof(PlayerDb.Hp)).IsModified = true;
                     if (db.SaveChangesEx())
                     {
-                        room.Push(() => Console.WriteLine($"Db Save Player {playerDb.Hp}"));
+                        // 클라이언트에 성공적인 아이템 사용 알림
+                        S_ChangeHp s_ChangeHp = new S_ChangeHp();
+                        s_ChangeHp.Hp = player.Hp;
+                        s_ChangeHp.ObjectId = player.Id;
+                        Console.WriteLine($"Player Hp: {playerDb.Hp}");
+
+                        room.Push(room.BroadcastVisionCube,player.CellPos, s_ChangeHp);
                     }
                 });
 
@@ -110,8 +116,6 @@ namespace Server.DB
                 return;
             }
 
-            //Console.WriteLine(rewardData.type);
-
             ItemDb itemDb = new ItemDb()
             {
                 TemplateId = rewardData.itemId,
@@ -134,21 +138,32 @@ namespace Server.DB
                                     .FirstOrDefault();
 
                     if (stackableItem == null)
+                    {
                         db.Items.Add(itemDb);
+                    }
                     else
+                    {
+                        itemDb.Slot = stackableItem.Slot;
                         stackableItem.Count += itemDb.Count;
-
+                    }
                     bool success = db.SaveChangesEx();
+
                     if (success)
                     {
                         // Me
                         room.Push(() =>
                         {
-                            Item newItem = Item.MakeItem(itemDb);
+                            Item newItem;
                             if (stackableItem == null)
+                            {
+                                newItem = Item.MakeItem(itemDb);
                                 player.Inven.Add(newItem);
+                            }
                             else
+                            {
+                                newItem = Item.MakeItem(stackableItem);
                                 player.Inven.Add(stackableItem.ItemDbId, itemDb.Count);
+                            }
 
                             // Client Noti
                             {
